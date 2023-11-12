@@ -1,0 +1,65 @@
+
+entity Project {
+	name String
+	streetAddress String
+	postalCode String
+	city String
+	stateProvince String
+    country String
+    startDate LocalDate
+    deadline LocalDate
+    status ProjectStatus
+}
+
+enum ProjectStatus {
+   PENDING
+   ON_PROGRESS
+   DELAYED
+   PAUSED
+   FINALIZED
+}
+
+entity Contact {
+	name String
+    lastName String
+    company String
+    address String
+    phone Long
+    email String
+    role String
+    notes String
+}
+
+entity File {
+   name String
+   content Blob
+   contentType String
+   description String
+}
+
+entity Progress {
+   notes String
+   link String
+}
+
+relationship OneToOne {
+	Project{assigned} to Contact
+    Project{customer} to Contact
+    Progress{contact} to Contact
+}
+
+relationship ManyToOne {
+	File{project} to Project
+    File{progress} to Progress
+    Progress{project} to Project
+}
+
+// Set pagination options
+paginate File with infinite-scroll
+paginate Project, Contact, Progress with pagination
+
+// Use Data Transfer Objects (DTO)
+dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl
