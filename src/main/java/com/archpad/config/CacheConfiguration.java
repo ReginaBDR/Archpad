@@ -48,6 +48,10 @@ public class CacheConfiguration {
             createCache(cm, com.archpad.domain.User.class.getName());
             createCache(cm, com.archpad.domain.Authority.class.getName());
             createCache(cm, com.archpad.domain.User.class.getName() + ".authorities");
+            createCache(cm, com.archpad.domain.Project.class.getName());
+            createCache(cm, com.archpad.domain.Contact.class.getName());
+            createCache(cm, com.archpad.domain.File.class.getName());
+            createCache(cm, com.archpad.domain.Progress.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

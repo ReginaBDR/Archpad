@@ -32,8 +32,7 @@ entity Contact {
 
 entity File {
    name String
-   content Blob
-   contentType String
+   file Blob
    description String
 }
 
@@ -43,23 +42,21 @@ entity Progress {
 }
 
 relationship OneToOne {
-	Project{assigned} to Contact
     Project{customer} to Contact
-    Progress{contact} to Contact
 }
 
+relationship OneToOne {
+    Progress{contact} to Contact
+}
 relationship ManyToOne {
 	File{project} to Project
     File{progress} to Progress
+}
+
+relationship ManyToOne {
     Progress{project} to Project
 }
 
-// Set pagination options
-paginate File with infinite-scroll
-paginate Project, Contact, Progress with pagination
-
-// Use Data Transfer Objects (DTO)
+paginate Project, Contact, Progress, File with pagination
 dto * with mapstruct
-
-// Set service options to all except few
-service all with serviceImpl
+service * with serviceImpl

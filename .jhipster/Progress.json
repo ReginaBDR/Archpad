@@ -1,0 +1,34 @@
+{
+  "applications": "*",
+  "changelogDate": "20231112184152",
+  "dto": "mapstruct",
+  "entityTableName": "progress",
+  "fields": [
+    {
+      "fieldName": "notes",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "link",
+      "fieldType": "String"
+    }
+  ],
+  "name": "Progress",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "contact",
+      "relationshipName": "contact",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "project",
+      "relationshipName": "project",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

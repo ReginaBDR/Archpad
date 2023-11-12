@@ -1,0 +1,11 @@
+export enum ProjectStatus {
+  PENDING = 'PENDING',
+
+  ON_PROGRESS = 'ON_PROGRESS',
+
+  DELAYED = 'DELAYED',
+
+  PAUSED = 'PAUSED',
+
+  FINALIZED = 'FINALIZED',
+}
