@@ -16,7 +16,7 @@ export const initialState = {
   errorMessage: null as unknown as string, // Errors returned from server side
   redirectMessage: null as unknown as string,
   sessionHasBeenFetched: false,
-  logoutUrl: null as unknown as string,
+  logoutUrl: './' as string,
 };
 
 export type AuthenticationState = Readonly<typeof initialState>;

@@ -2,16 +2,6 @@
 @import 'bootstrap-variables';
 // Import Bootstrap source files from node_modules
 @import 'bootstrap/scss/bootstrap';
-body {
-  background: #fafafa;
-  margin: 0;
-}
-
-a {
-  color: #533f03;
-  font-weight: bold;
-}
-
 * {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -20,37 +10,6 @@ a {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
   }
-}
-
-.app-container {
-  box-sizing: border-box;
-  .view-container {
-    width: 100%;
-    height: calc(100% - 40px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 1rem;
-    .card {
-      padding: 1rem;
-    }
-    .view-routes {
-      height: 100%;
-      > div {
-        height: 100%;
-      }
-    }
-  }
-}
-
-.fullscreen {
-  position: fixed;
-  top: 100px;
-  left: 0px;
-  width: 99% !important;
-  height: calc(100vh - 110px) !important;
-  margin: 5px;
-  z-index: 1000;
-  padding: 5px 25px 50px 25px !important;
 }
 
 /* ==========================================================================

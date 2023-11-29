@@ -1,38 +1,58 @@
 import React from 'react';
-import MenuItem from 'app/shared/layout/menus/menu-item';
+import { Button, Dropdown, MenuProps } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
-import { NavDropdown } from './menu-components';
+export const AccountMenu = ({ isAuthenticated = false }) => {
+  const navigate = useNavigate();
 
-const accountMenuItemsAuthenticated = () => (
-  <>
-    <MenuItem icon="wrench" to="/account/settings" data-cy="settings">
-      Settings
-    </MenuItem>
-    <MenuItem icon="lock" to="/account/password" data-cy="passwordItem">
-      Password
-    </MenuItem>
-    <MenuItem icon="sign-out-alt" to="/logout" data-cy="logout">
-      Sign out
-    </MenuItem>
-  </>
-);
+  const items: MenuProps['items'] = [
+    !isAuthenticated && {
+      key: '1',
+      label: (
+        <Button type="link" onClick={() => navigate('/login')} data-cy="login" id="login-item">
+          Sign in
+        </Button>
+      ),
+    },
+    !isAuthenticated && {
+      key: '2',
+      label: (
+        <Button type="link" onClick={() => navigate('/account/register')} data-cy="register">
+          Register
+        </Button>
+      ),
+    },
+    isAuthenticated && {
+      key: '3',
+      label: (
+        <Button type="link" onClick={() => navigate('/account/settings')} data-cy="settings">
+          Settings
+        </Button>
+      ),
+    },
+    isAuthenticated && {
+      key: '4',
+      label: (
+        <Button type="link" onClick={() => navigate('/account/password')} data-cy="passwordItem">
+          Password
+        </Button>
+      ),
+    },
+    isAuthenticated && {
+      key: '5',
+      label: (
+        <Button type="link" onClick={() => navigate('/logout')}>
+          Sign out
+        </Button>
+      ),
+    },
+  ];
 
-const accountMenuItems = () => (
-  <>
-    <MenuItem id="login-item" icon="sign-in-alt" to="/login" data-cy="login">
-      Sign in
-    </MenuItem>
-    <MenuItem icon="user-plus" to="/account/register" data-cy="register">
-      Register
-    </MenuItem>
-  </>
-);
-
-export const AccountMenu = ({ isAuthenticated = false }) => (
-  <NavDropdown icon="user" name="Account" id="account-menu" data-cy="accountMenu">
-    {isAuthenticated && accountMenuItemsAuthenticated()}
-    {!isAuthenticated && accountMenuItems()}
-  </NavDropdown>
-);
+  return (
+    <Dropdown menu={{ items }}>
+      <span>Account</span>
+    </Dropdown>
+  );
+};
 
 export default AccountMenu;

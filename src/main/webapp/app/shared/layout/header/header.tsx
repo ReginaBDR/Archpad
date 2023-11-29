@@ -1,53 +1,46 @@
 import './header.scss';
-
 import React, { useState } from 'react';
-
-import { Navbar, Nav, NavbarToggler, Collapse } from 'reactstrap';
 import LoadingBar from 'react-redux-loading-bar';
-
-import { Home, Brand } from './header-components';
+import { Home } from './header-components';
 import { AdminMenu, EntitiesMenu, AccountMenu } from '../menus';
+import { Menu } from 'antd';
+import { ItemType } from 'antd/es/menu/hooks/useItems';
+import { MenuOutlined } from '@ant-design/icons';
 
 export interface IHeaderProps {
   isAuthenticated: boolean;
   isAdmin: boolean;
-  ribbonEnv: string;
-  isInProduction: boolean;
   isOpenAPIEnabled: boolean;
 }
 
-const Header = (props: IHeaderProps) => {
-  const [menuOpen, setMenuOpen] = useState(false);
+const HeaderComponent = (props: IHeaderProps) => {
+  const [selectedMenuItem, setSelectedMenuItem] = useState<string>('1');
 
-  const renderDevRibbon = () =>
-    props.isInProduction === false ? (
-      <div className="ribbon dev">
-        <a href="">Development</a>
-      </div>
-    ) : null;
-
-  const toggleMenu = () => setMenuOpen(!menuOpen);
-
-  /* jhipster-needle-add-element-to-menu - JHipster will add new menu items here */
+  const menuItems: ItemType[] = [
+    { key: '1', title: 'Home', label: props.isAuthenticated && <Home /> },
+    { key: '2', title: 'Entities', label: props.isAuthenticated && <EntitiesMenu /> },
+    {
+      key: '3',
+      title: 'Administration',
+      label: props.isAuthenticated && props.isAdmin && <AdminMenu showOpenAPI={props.isOpenAPIEnabled} />,
+    },
+    { key: '4', title: 'Account', label: <AccountMenu isAuthenticated={props.isAuthenticated} /> },
+  ];
 
   return (
-    <div id="app-header">
-      {renderDevRibbon()}
+    <>
       <LoadingBar className="loading-bar" />
-      <Navbar data-cy="navbar" dark expand="md" fixed="top" className="jh-navbar">
-        <NavbarToggler aria-label="Menu" onClick={toggleMenu} />
-        <Brand />
-        <Collapse isOpen={menuOpen} navbar>
-          <Nav id="header-tabs" className="ms-auto" navbar>
-            <Home />
-            {props.isAuthenticated && <EntitiesMenu />}
-            {props.isAuthenticated && props.isAdmin && <AdminMenu showOpenAPI={props.isOpenAPIEnabled} />}
-            <AccountMenu isAuthenticated={props.isAuthenticated} />
-          </Nav>
-        </Collapse>
-      </Navbar>
-    </div>
+      <Menu
+        theme="light"
+        mode="horizontal"
+        className="header-menu"
+        overflowedIndicator={<MenuOutlined />}
+        selectedKeys={[selectedMenuItem]}
+        onClick={e => setSelectedMenuItem(e.key)}
+        items={menuItems}
+      />
+    </>
   );
 };
 
-export default Header;
+export default HeaderComponent;

@@ -1,87 +1,60 @@
 import './home.scss';
-
 import React from 'react';
-import { Link } from 'react-router-dom';
-
-import { Row, Col, Alert } from 'reactstrap';
-
+import { redirect } from 'react-router-dom';
+import QueueAnim from 'rc-queue-anim';
 import { useAppSelector } from 'app/config/store';
+import { Button, Col, Row } from 'antd';
+import BannerImage from './banner-image';
+import HomeSectionOne from './home-section-1';
+import HomeSectionTwo from './home-section-2';
 
 export const Home = () => {
   const account = useAppSelector(state => state.authentication.account);
 
   return (
-    <Row>
-      <Col md="3" className="pad">
-        <span className="hipster rounded" />
-      </Col>
-      <Col md="9">
-        <h1 className="display-4">Welcome, Java Hipster!</h1>
-        <p className="lead">This is your homepage</p>
-        {account?.login ? (
-          <div>
-            <Alert color="success">You are logged in as user &quot;{account.login}&quot;.</Alert>
-          </div>
-        ) : (
-          <div>
-            <Alert color="warning">
-              If you want to
-              <span>&nbsp;</span>
-              <Link to="/login" className="alert-link">
-                sign in
-              </Link>
-              , you can try the default accounts:
-              <br />- Administrator (login=&quot;admin&quot; and password=&quot;admin&quot;) <br />- User (login=&quot;user&quot; and
-              password=&quot;user&quot;).
-            </Alert>
-
-            <Alert color="warning">
-              You don&apos;t have an account yet?&nbsp;
-              <Link to="/account/register" className="alert-link">
-                Register a new account
-              </Link>
-            </Alert>
-          </div>
-        )}
-        <p>If you have any question on JHipster:</p>
-
-        <ul>
-          <li>
-            <a href="https://www.jhipster.tech/" target="_blank" rel="noopener noreferrer">
-              JHipster homepage
-            </a>
-          </li>
-          <li>
-            <a href="https://stackoverflow.com/tags/jhipster/info" target="_blank" rel="noopener noreferrer">
-              JHipster on Stack Overflow
-            </a>
-          </li>
-          <li>
-            <a href="https://github.com/jhipster/generator-jhipster/issues?state=open" target="_blank" rel="noopener noreferrer">
-              JHipster bug tracker
-            </a>
-          </li>
-          <li>
-            <a href="https://gitter.im/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">
-              JHipster public chat room
-            </a>
-          </li>
-          <li>
-            <a href="https://twitter.com/jhipster" target="_blank" rel="noopener noreferrer">
-              follow @jhipster on Twitter
-            </a>
-          </li>
-        </ul>
-
-        <p>
-          If you like JHipster, don&apos;t forget to give us a star on{' '}
-          <a href="https://github.com/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">
-            GitHub
-          </a>
-          !
-        </p>
-      </Col>
-    </Row>
+    <>
+      <Row align="middle" className="home-banner" gutter={[20, 20]}>
+        <Col xs={24} sm={24} md={10} lg={10} xl={12}>
+          <Row justify="center" align="middle">
+            <QueueAnim delay={300} ease="easeOutQuart">
+              <h1 key="h2">Welcome to Archipad</h1>
+              <p key="p">
+                Your all-in-one solution for efficient and seamless architecture project management. <br /> Unleash the full potential of
+                your projects with our intuitive and feature-rich platform designed specifically for architects and project teams.
+              </p>
+              {!account?.login && (
+                <span key="button">
+                  <Button
+                    type="primary"
+                    size="large"
+                    onClick={() => {
+                      redirect('/login');
+                    }}
+                  >
+                    Login
+                  </Button>
+                </span>
+              )}
+            </QueueAnim>
+          </Row>
+        </Col>
+        <Col xs={24} sm={24} md={14} lg={14} xl={12}>
+          <Row justify="end" align="middle">
+            <BannerImage />
+          </Row>
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]}>
+        <Col span={24}>
+          <HomeSectionOne />
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]}>
+        <Col span={24}>
+          <HomeSectionTwo />
+        </Col>
+      </Row>
+    </>
   );
 };
 
