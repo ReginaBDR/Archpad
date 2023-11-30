@@ -1,3 +1,10 @@
+export const bannerData = {
+  title: 'Welcome to Archipad',
+  paragraphOne: 'Your all-in-one solution for efficient and seamless architecture project management.',
+  paragraphTwo:
+    'Unleash the full potential of your projects with our intuitive and feature-rich platform designed specifically for architects and project teams.',
+};
+
 export const sectionOneData = [
   {
     title: 'Simplicity and Power',

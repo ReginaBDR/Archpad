@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import QueueAnim from 'rc-queue-anim';
 import OverPack from 'rc-scroll-anim/lib/ScrollOverPack';
-import { Row, Col, Flex } from 'antd';
+import { Col, Flex } from 'antd';
 
-export const HomeSectionTwoData: any = [
+interface IHomeSectionTwoData {
+  title: string;
+  content: ReactElement[];
+  svg: ReactElement;
+}
+
+export const HomeSectionTwoData: IHomeSectionTwoData[] = [
   {
     title: 'Project Overview',
     content: [
@@ -247,11 +253,6 @@ export default function HomeSectionTwo() {
         </div>
         <h3 key="h3">{d.title}</h3>
         <p key="p">{d.content}</p>
-        {d.exp && (
-          <div className="exp" key="exp">
-            {d.exp}
-          </div>
-        )}
       </QueueAnim>
     </Col>
   ));

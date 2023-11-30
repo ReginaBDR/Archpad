@@ -1,15 +1,18 @@
 import './home.scss';
 import React from 'react';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import QueueAnim from 'rc-queue-anim';
 import { useAppSelector } from 'app/config/store';
 import { Button, Col, Row } from 'antd';
 import BannerImage from './banner-image';
 import HomeSectionOne from './home-section-1';
 import HomeSectionTwo from './home-section-2';
+import { bannerData } from './home-data';
 
 export const Home = () => {
   const account = useAppSelector(state => state.authentication.account);
+  const navigate = useNavigate();
+  const { title, paragraphOne, paragraphTwo } = bannerData;
 
   return (
     <>
@@ -17,10 +20,11 @@ export const Home = () => {
         <Col xs={24} sm={24} md={10} lg={10} xl={12}>
           <Row justify="center" align="middle">
             <QueueAnim delay={300} ease="easeOutQuart">
-              <h1 key="h2">Welcome to Archipad</h1>
+              <h1 key="h2">{title}</h1>
               <p key="p">
-                Your all-in-one solution for efficient and seamless architecture project management. <br /> Unleash the full potential of
-                your projects with our intuitive and feature-rich platform designed specifically for architects and project teams.
+                {paragraphOne}
+                <br />
+                {paragraphTwo}
               </p>
               {!account?.login && (
                 <span key="button">
@@ -28,7 +32,7 @@ export const Home = () => {
                     type="primary"
                     size="large"
                     onClick={() => {
-                      redirect('/login');
+                      navigate('/login');
                     }}
                   >
                     Login
@@ -44,7 +48,7 @@ export const Home = () => {
           </Row>
         </Col>
       </Row>
-      <Row gutter={[16, 16]} align="middle" style={{ backgroundColor: '#fff' }}>
+      <Row gutter={[16, 16]} align="middle" className="background-white">
         <Col span={24}>
           <HomeSectionOne />
         </Col>

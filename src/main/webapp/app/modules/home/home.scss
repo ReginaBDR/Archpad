@@ -120,14 +120,10 @@ Main page styles
         font-weight: 400;
         font-size: 16px;
       }
-      .exp {
-        position: absolute;
-        bottom: 24px;
-        left: 0;
-        width: 100%;
-        font-size: 20px;
-        color: fade(#000, 25);
-      }
     }
   }
+}
+
+.background-white {
+  background-color: #fff;
 }
