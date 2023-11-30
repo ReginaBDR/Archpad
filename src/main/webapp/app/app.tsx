@@ -11,9 +11,9 @@ import HeaderComponent from 'app/shared/layout/header/header';
 import FooterComponent from 'app/shared/layout/footer/footer';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import ErrorBoundary from 'app/shared/error/error-boundary';
-import { AUTHORITIES } from 'app/config/constants';
+import { AUTHORITIES, colorPrimary, colorPrimaryHover, menuHover, themeStyles } from 'app/config/constants';
 import AppRoutes from 'app/routes';
-import { Layout } from 'antd';
+import { ConfigProvider, Layout } from 'antd';
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -33,22 +33,24 @@ export const App = () => {
 
   return (
     <BrowserRouter basename={baseHref}>
-      <Layout style={{ minHeight: '250vh', overflow: 'auto' }}>
-        <ToastContainer position={toast.POSITION.TOP_LEFT} className="toastify-container" toastClassName="toastify-toast" />
-        <ErrorBoundary>
-          <Header style={{ backgroundColor: '#ffff' }}>
-            <HeaderComponent isAuthenticated={isAuthenticated} isAdmin={isAdmin} isOpenAPIEnabled={isOpenAPIEnabled} />
-          </Header>
-        </ErrorBoundary>
-        <ErrorBoundary>
-          <Content>
-            <AppRoutes />
-          </Content>
-        </ErrorBoundary>
-        <Footer style={{ backgroundColor: '#ffff', padding: '20px' }}>
-          <FooterComponent />
-        </Footer>
-      </Layout>
+      <ConfigProvider theme={themeStyles}>
+        <Layout className="layout">
+          <ToastContainer position={toast.POSITION.TOP_LEFT} className="toastify-container" toastClassName="toastify-toast" />
+          <ErrorBoundary>
+            <Header className="header">
+              <HeaderComponent isAuthenticated={isAuthenticated} isAdmin={isAdmin} isOpenAPIEnabled={isOpenAPIEnabled} />
+            </Header>
+          </ErrorBoundary>
+          <ErrorBoundary>
+            <Content>
+              <AppRoutes />
+            </Content>
+          </ErrorBoundary>
+          <Footer className="footer">
+            <FooterComponent />
+          </Footer>
+        </Layout>
+      </ConfigProvider>
     </BrowserRouter>
   );
 };
