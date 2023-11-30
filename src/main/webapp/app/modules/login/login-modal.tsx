@@ -1,8 +1,7 @@
 import React from 'react';
-import { ValidatedField } from 'react-jhipster';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Row, Col, Form } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { type FieldError, useForm } from 'react-hook-form';
+import { Alert, Button, Checkbox, Col, Form, Input, Modal, Row, Space } from 'antd';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 
 export interface ILoginModalProps {
   showModal: boolean;
@@ -12,83 +11,60 @@ export interface ILoginModalProps {
 }
 
 const LoginModal = (props: ILoginModalProps) => {
-  const login = ({ username, password, rememberMe }) => {
-    props.handleLogin(username, password, rememberMe);
-  };
+  const { loginError, handleLogin, handleClose } = props;
+  const [form] = Form.useForm();
 
-  const {
-    handleSubmit,
-    register,
-    formState: { errors, touchedFields },
-  } = useForm({ mode: 'onTouched' });
-
-  const { loginError, handleClose } = props;
-
-  const handleLoginSubmit = e => {
-    handleSubmit(login)(e);
+  const handleLoginSubmit = (values: { username: string; password: string; rememberMe: boolean }) => {
+    form
+      .validateFields()
+      .then(() => {
+        handleLogin(values.username, values.password, values.rememberMe);
+      })
+      .catch(e => {
+        console.error('There was an error on sing in', e);
+      });
   };
 
   return (
-    <Modal isOpen={props.showModal} toggle={handleClose} backdrop="static" id="login-page" autoFocus={false}>
-      <Form onSubmit={handleLoginSubmit}>
-        <ModalHeader id="login-title" data-cy="loginTitle" toggle={handleClose}>
-          Sign in
-        </ModalHeader>
-        <ModalBody>
-          <Row>
-            <Col md="12">
-              {loginError ? (
-                <Alert color="danger" data-cy="loginError">
-                  <strong>Failed to sign in!</strong> Please check your credentials and try again.
-                </Alert>
-              ) : null}
-            </Col>
-            <Col md="12">
-              <ValidatedField
-                name="username"
-                label="Username"
-                placeholder="Your username"
-                required
-                autoFocus
-                data-cy="username"
-                validate={{ required: 'Username cannot be empty!' }}
-                register={register}
-                error={errors.username as FieldError}
-                isTouched={touchedFields.username}
-              />
-              <ValidatedField
-                name="password"
-                type="password"
-                label="Password"
-                placeholder="Your password"
-                required
-                data-cy="password"
-                validate={{ required: 'Password cannot be empty!' }}
-                register={register}
-                error={errors.password as FieldError}
-                isTouched={touchedFields.password}
-              />
-              <ValidatedField name="rememberMe" type="checkbox" check label="Remember me" value={true} register={register} />
-            </Col>
-          </Row>
-          <div className="mt-1">&nbsp;</div>
-          <Alert color="warning">
-            <Link to="/account/reset/request" data-cy="forgetYourPasswordSelector">
-              Did you forget your password?
-            </Link>
-          </Alert>
-          <Alert color="warning">
-            <span>You don&apos;t have an account yet?</span> <Link to="/account/register">Register a new account</Link>
-          </Alert>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={handleClose} tabIndex={1}>
-            Cancel
-          </Button>{' '}
-          <Button color="primary" type="submit" data-cy="submit">
-            Sign in
-          </Button>
-        </ModalFooter>
+    <Modal open={props.showModal} onCancel={handleClose} title="Sign in" okText="Sign in" footer={null}>
+      <Form
+        name="login"
+        form={form}
+        className="login-form"
+        initialValues={{ rememberMe: true }}
+        onFinish={handleLoginSubmit}
+        preserve={false}
+        size="large"
+      >
+        <Row gutter={[16, 16]}>
+          <Col span="24">
+            {loginError ? (
+              <Alert type="error" data-cy="loginError" message="Failed to sign in! Please check your credentials and try again." />
+            ) : null}
+          </Col>
+          <Col span="24">
+            <Form.Item name="username" rules={[{ required: true, message: 'Please input your Username!' }]}>
+              <Input prefix={<UserOutlined />} placeholder="Username" data-cy="username" />
+            </Form.Item>
+            <Form.Item name="password" rules={[{ required: true, message: 'Please input your Password!' }]}>
+              <Input prefix={<LockOutlined />} type="password" placeholder="Password" data-cy="password" />
+            </Form.Item>
+            <Form.Item>
+              <Form.Item name="rememberMe" valuePropName="checked" noStyle>
+                <Checkbox>Remember me</Checkbox>
+              </Form.Item>
+              <Link style={{ float: 'right' }} to="/account/reset/request" data-cy="forgetYourPasswordSelector">
+                Forgot password
+              </Link>
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" style={{ marginBottom: '10px' }} block>
+                Log in
+              </Button>
+              Or <Link to="/account/register">register now!</Link>
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
     </Modal>
   );

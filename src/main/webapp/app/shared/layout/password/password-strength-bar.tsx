@@ -1,3 +1,4 @@
+import Title from 'antd/es/typography/Title';
 import './password-strength-bar.scss';
 
 import React from 'react';
@@ -64,7 +65,7 @@ export const PasswordStrengthBar = ({ password }: IPasswordStrengthBarProps) => 
 
   return (
     <div id="strength">
-      <small>Password strength:</small>
+      <Title level={5}>Password strength:</Title>
       <ul id="strengthBar">{points}</ul>
     </div>
   );

@@ -31,6 +31,7 @@ export const Home = () => {
                   <Button
                     type="primary"
                     size="large"
+                    className="home-banner-btn"
                     onClick={() => {
                       navigate('/login');
                     }}

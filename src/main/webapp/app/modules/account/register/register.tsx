@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { ValidatedField, ValidatedForm, isEmail } from 'react-jhipster';
-import { Row, Col, Alert, Button } from 'reactstrap';
-import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
-
 import PasswordStrengthBar from 'app/shared/layout/password/password-strength-bar';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { handleRegister, reset } from './register.reducer';
+import { Button, Col, Form, Input, Row, message } from 'antd';
+import { LockOutlined, UserOutlined, MailOutlined } from '@ant-design/icons';
+import Title from 'antd/es/typography/Title';
 
 export const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const dispatch = useAppDispatch();
+  const [form] = Form.useForm();
 
   useEffect(
     () => () => {
@@ -20,7 +19,14 @@ export const RegisterPage = () => {
   );
 
   const handleValidSubmit = ({ username, email, firstPassword }) => {
-    dispatch(handleRegister({ login: username, email, password: firstPassword, langKey: 'en' }));
+    form
+      .validateFields()
+      .then(() => {
+        dispatch(handleRegister({ login: username, email, password: firstPassword, langKey: 'en' }));
+      })
+      .catch(e => {
+        console.error('There was an error on sing in', e);
+      });
   };
 
   const updatePassword = event => setPassword(event.target.value);
@@ -29,93 +35,101 @@ export const RegisterPage = () => {
 
   useEffect(() => {
     if (successMessage) {
-      toast.success(successMessage);
+      message.success(successMessage);
     }
   }, [successMessage]);
 
   return (
-    <div>
-      <Row className="justify-content-center">
-        <Col md="8">
-          <h1 id="register-title" data-cy="registerTitle">
+    <div className="padding-top">
+      <Row justify="center">
+        <Col xs={22} sm={22} md={18} lg={12} xl={12} xxl={12}>
+          <Title level={1} id="register-title" data-cy="registerTitle">
             Registration
-          </h1>
+          </Title>
         </Col>
       </Row>
-      <Row className="justify-content-center">
-        <Col md="8">
-          <ValidatedForm id="register-form" onSubmit={handleValidSubmit}>
-            <ValidatedField
-              name="username"
-              label="Username"
-              placeholder="Your username"
-              validate={{
-                required: { value: true, message: 'Your username is required.' },
-                pattern: {
-                  value: /^[a-zA-Z0-9!$&*+=?^_`{|}~.-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$|^[_.@A-Za-z0-9-]+$/,
-                  message: 'Your username is invalid.',
-                },
-                minLength: { value: 1, message: 'Your username is required to be at least 1 character.' },
-                maxLength: { value: 50, message: 'Your username cannot be longer than 50 characters.' },
-              }}
-              data-cy="username"
-            />
-            <ValidatedField
-              name="email"
-              label="Email"
-              placeholder="Your email"
-              type="email"
-              validate={{
-                required: { value: true, message: 'Your email is required.' },
-                minLength: { value: 5, message: 'Your email is required to be at least 5 characters.' },
-                maxLength: { value: 254, message: 'Your email cannot be longer than 50 characters.' },
-                validate: v => isEmail(v) || 'Your email is invalid.',
-              }}
-              data-cy="email"
-            />
-            <ValidatedField
-              name="firstPassword"
-              label="New password"
-              placeholder="New password"
-              type="password"
-              onChange={updatePassword}
-              validate={{
-                required: { value: true, message: 'Your password is required.' },
-                minLength: { value: 4, message: 'Your password is required to be at least 4 characters.' },
-                maxLength: { value: 50, message: 'Your password cannot be longer than 50 characters.' },
-              }}
-              data-cy="firstPassword"
-            />
-            <PasswordStrengthBar password={password} />
-            <ValidatedField
-              name="secondPassword"
-              label="New password confirmation"
-              placeholder="Confirm the new password"
-              type="password"
-              validate={{
-                required: { value: true, message: 'Your confirmation password is required.' },
-                minLength: { value: 4, message: 'Your confirmation password is required to be at least 4 characters.' },
-                maxLength: { value: 50, message: 'Your confirmation password cannot be longer than 50 characters.' },
-                validate: v => v === password || 'The password and its confirmation do not match!',
-              }}
-              data-cy="secondPassword"
-            />
-            <Button id="register-submit" color="primary" type="submit" data-cy="submit">
-              Register
-            </Button>
-          </ValidatedForm>
-          <p>&nbsp;</p>
-          <Alert color="warning">
-            <span>If you want to </span>
-            <Link to="/login" className="alert-link">
-              sign in
-            </Link>
-            <span>
-              , you can try the default accounts:
-              <br />- Administrator (login=&quot;admin&quot; and password=&quot;admin&quot;) <br />- User (login=&quot;user&quot; and
-              password=&quot;user&quot;).
-            </span>
-          </Alert>
+      <Row justify="center">
+        <Col xs={22} sm={22} md={18} lg={12} xl={10} xxl={10}>
+          <Form
+            name="register"
+            form={form}
+            className="login-form"
+            initialValues={{}}
+            onFinish={handleValidSubmit}
+            preserve={false}
+            size="large"
+            id="register-form"
+            layout="vertical"
+          >
+            <Row gutter={[16, 16]}>
+              <Col span="24">
+                <Form.Item name="username" rules={[{ required: true, message: 'Please input your Username!' }]}>
+                  <Input prefix={<UserOutlined />} placeholder="Username" data-cy="username" minLength={1} maxLength={50} />
+                </Form.Item>
+                <Form.Item
+                  name="email"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your Email!',
+                    },
+                    { type: 'email', message: 'The input is not valid E-mail!' },
+                  ]}
+                >
+                  <Input prefix={<MailOutlined />} placeholder="Your email" data-cy="email" minLength={5} maxLength={254} />
+                </Form.Item>
+                <Form.Item
+                  name="firstPassword"
+                  rules={[
+                    { required: true, message: 'Please input your Password!' },
+                    { min: 5, message: 'Please input a password longer than 7 characters' },
+                  ]}
+                  hasFeedback
+                >
+                  <Input.Password
+                    prefix={<LockOutlined />}
+                    onChange={updatePassword}
+                    type="password"
+                    placeholder="Password"
+                    data-cy="firstPassword"
+                    maxLength={50}
+                  />
+                </Form.Item>
+                <PasswordStrengthBar password={password} />
+                <Form.Item
+                  name="secondPassword"
+                  rules={[
+                    { required: true, message: 'Please confirm your Password!' },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue('firstPassword') === value) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(new Error('The new password that you entered do not match!'));
+                      },
+                    }),
+                  ]}
+                  dependencies={['password']}
+                  hasFeedback
+                >
+                  <Input.Password
+                    prefix={<LockOutlined />}
+                    type="password"
+                    placeholder="Confirm the new password"
+                    data-cy="secondPassword"
+                    minLength={5}
+                    maxLength={50}
+                  />
+                </Form.Item>
+
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" block data-cy="submit">
+                    Register
+                  </Button>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
         </Col>
       </Row>
     </div>
