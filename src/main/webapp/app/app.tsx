@@ -33,7 +33,7 @@ export const App = () => {
 
   return (
     <BrowserRouter basename={baseHref}>
-      <Layout style={{ minHeight: '370vh' }}>
+      <Layout style={{ minHeight: '250vh', overflow: 'auto' }}>
         <ToastContainer position={toast.POSITION.TOP_LEFT} className="toastify-container" toastClassName="toastify-toast" />
         <ErrorBoundary>
           <Header style={{ backgroundColor: '#ffff' }}>
@@ -41,11 +41,11 @@ export const App = () => {
           </Header>
         </ErrorBoundary>
         <ErrorBoundary>
-          <Content style={{ padding: '0 40px' }}>
+          <Content>
             <AppRoutes />
           </Content>
         </ErrorBoundary>
-        <Footer style={{ backgroundColor: '#ffff' }}>
+        <Footer style={{ backgroundColor: '#ffff', padding: '20px' }}>
           <FooterComponent />
         </Footer>
       </Layout>

@@ -9,7 +9,7 @@ export const HomeSectionOne = () => {
   const RowWrapper = React.forwardRef((props: any, ref: React.Ref<any>) => <Row {...props} ref={ref} />);
 
   const children = sectionOneData.map((d, i) => (
-    <QueueAnim component={ColWrapper} key={i} type="bottom" className="col" componentProps={{ xs: 24, sm: 24, md: 24, lg: 8, xl: 8 }}>
+    <QueueAnim component={ColWrapper} key={i} type="bottom" id="col" componentProps={{ xxs: 24, xs: 24, sm: 24, md: 12, lg: 8, xl: 8 }}>
       <div key="image" className="image" style={{ backgroundImage: `url(${d.src})` }} />
       <h3 key="h3">{d.title}</h3>
       <p key="p">{d.content}</p>

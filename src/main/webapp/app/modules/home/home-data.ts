@@ -14,7 +14,7 @@ export const sectionOneData = [
   {
     title: 'Scalability',
     content:
-      "Whether you're managing a small-scale project or a large architectural endeavor, ArchiManage scales with you. Grow your projects without limits.",
+      "Whether you're managing a small-scale project or a large architectural endeavor, Archipad scales with you. Grow your projects without limits.",
     src: 'https://gw.alipayobjects.com/zos/rmsportal/oxmXLgGjCeXfYPcVSbKg.png',
   },
 ];

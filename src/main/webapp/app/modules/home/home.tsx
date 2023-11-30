@@ -44,7 +44,7 @@ export const Home = () => {
           </Row>
         </Col>
       </Row>
-      <Row gutter={[16, 16]}>
+      <Row gutter={[16, 16]} align="middle" style={{ backgroundColor: '#fff' }}>
         <Col span={24}>
           <HomeSectionOne />
         </Col>
