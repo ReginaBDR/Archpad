@@ -1,24 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Translate, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-
 import { getEntities } from './progress.reducer';
+import { Button, Card, Col, Row, Timeline, TimelineItemProps } from 'antd';
+import Title from 'antd/es/typography/Title';
+import { PlusOutlined } from '@ant-design/icons';
+import { IProgress } from 'app/shared/model/progress.model';
+import ProgressDetail from './progress-detail';
 
-export const Progress = () => {
+interface IProgressProps {
+  projectId?: string;
+}
+
+export const Progress = (props: IProgressProps) => {
+  const { projectId } = props;
   const dispatch = useAppDispatch();
-
   const pageLocation = useLocation();
   const navigate = useNavigate();
 
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
+  const [progressItems, setProgressItems] = useState<TimelineItemProps[]>([]);
+  const [selectedProgress, setSelectedProgress] = useState<number>(null);
 
   const progressList = useAppSelector(state => state.progress.entities);
   const loading = useAppSelector(state => state.progress.loading);
@@ -60,6 +68,40 @@ export const Progress = () => {
       });
     }
   }, [pageLocation.search]);
+  // moment(e.date).format("DD MMM YYYY")
+
+  useEffect(() => {
+    if (progressList.length > 0 && !loading) {
+      const data: TimelineItemProps[] = progressList.map((progress: IProgress) => {
+        return {
+          key: progress.id,
+          label: (
+            <Button type="text" onClick={() => setSelectedProgress(progress.id)}>
+              {progress?.link || 'Unknown user'}
+            </Button>
+          ),
+          children: (
+            <Button type="link" onClick={() => setSelectedProgress(progress.id)}>
+              {progress?.notes}
+            </Button>
+          ),
+        };
+      });
+      setProgressItems(data);
+    }
+    return () => {
+      setProgressItems([]);
+    };
+  }, [progressList, loading]);
+
+  useEffect(() => {
+    if (progressList.length > 0) {
+      setSelectedProgress(progressList[0].id);
+    }
+    return () => {
+      setSelectedProgress(null);
+    };
+  }, [progressList]);
 
   const sort = p => () => {
     setPaginationState({
@@ -90,110 +132,38 @@ export const Progress = () => {
   };
 
   return (
-    <div>
-      <h2 id="progress-heading" data-cy="ProgressHeading">
-        Progresses
-        <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
-          </Button>
-          <Link to="/progress/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp; Create a new Progress
-          </Link>
-        </div>
-      </h2>
-      <div className="table-responsive">
-        {progressList && progressList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand" onClick={sort('id')}>
-                  ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
-                </th>
-                <th className="hand" onClick={sort('notes')}>
-                  Notes <FontAwesomeIcon icon={getSortIconByFieldName('notes')} />
-                </th>
-                <th className="hand" onClick={sort('link')}>
-                  Link <FontAwesomeIcon icon={getSortIconByFieldName('link')} />
-                </th>
-                <th>
-                  Contact <FontAwesomeIcon icon="sort" />
-                </th>
-                <th>
-                  Project <FontAwesomeIcon icon="sort" />
-                </th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {progressList.map((progress, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/progress/${progress.id}`} color="link" size="sm">
-                      {progress.id}
-                    </Button>
-                  </td>
-                  <td>{progress.notes}</td>
-                  <td>{progress.link}</td>
-                  <td>{progress.contact ? <Link to={`/contact/${progress.contact.id}`}>{progress.contact.id}</Link> : ''}</td>
-                  <td>{progress.project ? <Link to={`/project/${progress.project.id}`}>{progress.project.id}</Link> : ''}</td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/progress/${progress.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                        <FontAwesomeIcon icon="eye" />{' '}
-                        <span className="d-none d-md-inline">Translation missing for entity.action.view</span>
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/progress/${progress.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" />{' '}
-                        <span className="d-none d-md-inline">Translation missing for entity.action.edit</span>
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          (location.href = `/progress/${progress.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`)
-                        }
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" />{' '}
-                        <span className="d-none d-md-inline">Translation missing for entity.action.delete</span>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        ) : (
-          !loading && <div className="alert alert-warning">No Progresses found</div>
-        )}
-      </div>
-      {totalItems ? (
-        <div className={progressList && progressList.length > 0 ? '' : 'd-none'}>
-          <div className="justify-content-center d-flex">
-            <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} />
-          </div>
-          <div className="justify-content-center d-flex">
-            <JhiPagination
-              activePage={paginationState.activePage}
-              onSelect={handlePagination}
-              maxButtons={5}
-              itemsPerPage={paginationState.itemsPerPage}
-              totalItems={totalItems}
-            />
-          </div>
-        </div>
-      ) : (
-        ''
-      )}
+    <div className="padding" style={{ width: '100%' }}>
+      <Title level={2} data-cy="ProgressHeading">
+        Progress Tracking
+      </Title>
+      <Row gutter={[20, 20]}>
+        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+          <Row justify="end" align="middle">
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/progress/new')} data-cy="entityCreateButton">
+              Add Progress
+            </Button>
+          </Row>
+          <Row justify="center" align="middle" style={{ marginTop: '2rem' }}>
+            <Col span={24} style={{ overflowY: 'auto', overflowX: 'hidden' }}>
+              <Timeline mode="left" items={progressItems} />
+            </Col>
+          </Row>
+        </Col>
+        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+          <Row justify="center">
+            <Card style={{ width: '100%' }}>{selectedProgress && <ProgressDetail progressId={selectedProgress} />}</Card>
+          </Row>
+        </Col>
+      </Row>
     </div>
+    // {/* <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} /> */}
+    // {/* <JhiPagination
+    //   activePage={paginationState.activePage}
+    //   onSelect={handlePagination}
+    //   maxButtons={5}
+    //   itemsPerPage={paginationState.itemsPerPage}
+    //   totalItems={totalItems}
+    // /> */}
   );
 };
 

@@ -1,54 +1,68 @@
 import React, { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { Button, Row, Col } from 'reactstrap';
-import {} from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-
 import { getEntity } from './progress.reducer';
+import { Button, Descriptions, DescriptionsProps, Row } from 'antd';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router';
+import { IProgress } from 'app/shared/model/progress.model';
 
-export const ProgressDetail = () => {
+interface IProgressDetailProps {
+  progressId?: number;
+}
+
+export const ProgressDetail = (props: IProgressDetailProps) => {
+  const { progressId } = props;
   const dispatch = useAppDispatch();
-
-  const { id } = useParams<'id'>();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(getEntity(id));
-  }, []);
+    if (progressId !== undefined) {
+      dispatch(getEntity(progressId));
+    }
+  }, [dispatch, progressId]);
 
-  const progressEntity = useAppSelector(state => state.progress.entity);
+  const progressEntity: IProgress = useAppSelector(state => state.progress.entity);
+
+  const items: DescriptionsProps['items'] = [
+    { key: '1', label: 'Link reference', children: progressEntity.link },
+    {
+      key: '2',
+      label: 'Contact attached',
+      children: progressEntity.contact ? `${progressEntity?.contact?.name || ''} ${progressEntity?.contact?.lastName || ''}` : 'None',
+    },
+    { key: '3', label: 'Changelog notes', children: progressEntity.notes },
+  ];
+
   return (
-    <Row>
-      <Col md="8">
-        <h2 data-cy="progressDetailsHeading">Progress</h2>
-        <dl className="jh-entity-details">
-          <dt>
-            <span id="id">Translation missing for global.field.id</span>
-          </dt>
-          <dd>{progressEntity.id}</dd>
-          <dt>
-            <span id="notes">Notes</span>
-          </dt>
-          <dd>{progressEntity.notes}</dd>
-          <dt>
-            <span id="link">Link</span>
-          </dt>
-          <dd>{progressEntity.link}</dd>
-          <dt>Contact</dt>
-          <dd>{progressEntity.contact ? progressEntity.contact.id : ''}</dd>
-          <dt>Project</dt>
-          <dd>{progressEntity.project ? progressEntity.project.id : ''}</dd>
-        </dl>
-        <Button tag={Link} to="/progress" replace color="info" data-cy="entityDetailsBackButton">
-          <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Translation missing for entity.action.back</span>
-        </Button>
-        &nbsp;
-        <Button tag={Link} to={`/progress/${progressEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Translation missing for entity.action.edit</span>
-        </Button>
-      </Col>
-    </Row>
+    <Descriptions
+      layout="vertical"
+      column={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 1, xxl: 1 }}
+      style={{ width: '100%' }}
+      bordered
+      items={items}
+      extra={
+        <Row justify="center" align="middle">
+          <Button
+            type="text"
+            size="middle"
+            icon={<EditOutlined />}
+            onClick={() => navigate(`/progress/${progressEntity.id}/edit`)}
+            data-cy="entityEditButton"
+          >
+            Edit
+          </Button>
+          <Button
+            type="text"
+            size="middle"
+            icon={<DeleteOutlined />}
+            onClick={() => navigate(`/progress/${progressEntity.id}/delete`)}
+            data-cy="entityDeleteButton"
+          >
+            Delete
+          </Button>
+        </Row>
+      }
+    />
   );
 };
 

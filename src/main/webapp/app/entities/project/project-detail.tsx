@@ -1,84 +1,103 @@
-import React, { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { Button, Row, Col } from 'reactstrap';
-import { TextFormat } from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeftOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-
 import { getEntity } from './project.reducer';
+import { Button, Col, Descriptions, Row, Space, Tabs } from 'antd';
+import Title from 'antd/es/typography/Title';
+import { IProject } from 'app/shared/model/project.model';
+import { project, location } from './project-description-columns';
+import Contact from '../contact';
+import ContactDetail from '../contact/contact-detail';
+import Progress from '../progress/progress';
+import File from '../file/file';
 
 export const ProjectDetail = () => {
   const dispatch = useAppDispatch();
-
+  const navigate = useNavigate();
   const { id } = useParams<'id'>();
+  const [activeTabKey, setActiveTabKey] = useState<string>('1');
 
   useEffect(() => {
     dispatch(getEntity(id));
   }, []);
 
-  const projectEntity = useAppSelector(state => state.project.entity);
+  const projectEntity: IProject = useAppSelector(state => state.project.entity);
+
+  const tabContent = [
+    {
+      label: 'Project details',
+      key: '1',
+      children: (
+        <Row style={{ padding: '1rem 0', backgroundColor: '#ffff' }} justify="center" align="middle">
+          <Col span={22}>
+            <Row justify="space-between">
+              <Title level={2} data-cy="projectDetailsHeading">
+                {`Project ${projectEntity.name}`}
+              </Title>
+              <Space size="small" wrap>
+                <Button type="primary" onClick={() => navigate('/project')} data-cy="entityDetailsBackButton" icon={<ArrowLeftOutlined />}>
+                  Go back
+                </Button>
+                <Button type="primary" onClick={() => navigate(`/project/${projectEntity.id}/edit`)} icon={<EditOutlined />}>
+                  Edit
+                </Button>
+                <Button type="primary" onClick={() => navigate(`/project/${projectEntity.id}/delete`)} icon={<DeleteOutlined />}>
+                  Delete
+                </Button>
+              </Space>
+            </Row>
+            <Row justify="center" style={{ marginTop: '2rem' }}>
+              <Descriptions
+                items={project(projectEntity)}
+                labelStyle={{ color: '#06142e', fontWeight: '600' }}
+                column={{ xs: 1, sm: 1, md: 2, lg: 4, xl: 4, xxl: 4 }}
+              />
+            </Row>
+            <Row justify="center" style={{ marginTop: '2rem' }}>
+              <Descriptions
+                title="Location details"
+                labelStyle={{ color: '#b7b7b7' }}
+                items={location(projectEntity)}
+                column={{ xs: 1, sm: 1, md: 2, lg: 3, xl: 3, xxl: 3 }}
+              />
+            </Row>
+            <Row justify="center" style={{ marginTop: '2rem' }}>
+              <Progress projectId={id} />
+            </Row>
+          </Col>
+        </Row>
+      ),
+    },
+    {
+      label: 'Customer details',
+      key: '2',
+      children: <ContactDetail customerIdProp={projectEntity?.customer?.id} />,
+    },
+    {
+      label: 'Project Contacts',
+      key: '3',
+      children: <Contact />,
+    },
+    {
+      label: 'Project Files',
+      key: '4',
+      children: <File projectId={id} />,
+    },
+  ];
+
   return (
-    <Row>
-      <Col md="8">
-        <h2 data-cy="projectDetailsHeading">Project</h2>
-        <dl className="jh-entity-details">
-          <dt>
-            <span id="id">Translation missing for global.field.id</span>
-          </dt>
-          <dd>{projectEntity.id}</dd>
-          <dt>
-            <span id="name">Name</span>
-          </dt>
-          <dd>{projectEntity.name}</dd>
-          <dt>
-            <span id="streetAddress">Street Address</span>
-          </dt>
-          <dd>{projectEntity.streetAddress}</dd>
-          <dt>
-            <span id="postalCode">Postal Code</span>
-          </dt>
-          <dd>{projectEntity.postalCode}</dd>
-          <dt>
-            <span id="city">City</span>
-          </dt>
-          <dd>{projectEntity.city}</dd>
-          <dt>
-            <span id="stateProvince">State Province</span>
-          </dt>
-          <dd>{projectEntity.stateProvince}</dd>
-          <dt>
-            <span id="country">Country</span>
-          </dt>
-          <dd>{projectEntity.country}</dd>
-          <dt>
-            <span id="startDate">Start Date</span>
-          </dt>
-          <dd>
-            {projectEntity.startDate ? <TextFormat value={projectEntity.startDate} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}
-          </dd>
-          <dt>
-            <span id="deadline">Deadline</span>
-          </dt>
-          <dd>
-            {projectEntity.deadline ? <TextFormat value={projectEntity.deadline} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}
-          </dd>
-          <dt>
-            <span id="status">Status</span>
-          </dt>
-          <dd>{projectEntity.status}</dd>
-          <dt>Customer</dt>
-          <dd>{projectEntity.customer ? projectEntity.customer.id : ''}</dd>
-        </dl>
-        <Button tag={Link} to="/project" replace color="info" data-cy="entityDetailsBackButton">
-          <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Translation missing for entity.action.back</span>
-        </Button>
-        &nbsp;
-        <Button tag={Link} to={`/project/${projectEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Translation missing for entity.action.edit</span>
-        </Button>
-      </Col>
+    <Row justify="center" className="padding">
+      <Tabs
+        tabPosition="top"
+        activeKey={activeTabKey}
+        items={tabContent}
+        centered
+        style={{ width: '-webkit-fill-available' }}
+        onChange={(key: string) => {
+          setActiveTabKey(key);
+        }}
+      />
     </Row>
   );
 };

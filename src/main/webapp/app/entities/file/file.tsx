@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { openFile, byteSize, Translate, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-
 import { getEntities } from './file.reducer';
+import { Avatar, Button, Col, List, Row, Tooltip } from 'antd';
+import Title from 'antd/es/typography/Title';
+import { IFile } from 'app/shared/model/file.model';
+import { PlusOutlined, EyeOutlined, DownloadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
-export const File = () => {
+interface IFileProps {
+  projectId?: string;
+}
+
+export const File = (props: IFileProps) => {
+  const { projectId } = props;
   const dispatch = useAppDispatch();
 
   const pageLocation = useLocation();
@@ -90,125 +96,86 @@ export const File = () => {
   };
 
   return (
-    <div>
-      <h2 id="file-heading" data-cy="FileHeading">
-        Files
-        <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
-          </Button>
-          <Link to="/file/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp; Create a new File
-          </Link>
-        </div>
-      </h2>
-      <div className="table-responsive">
-        {fileList && fileList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand" onClick={sort('id')}>
-                  ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
-                </th>
-                <th className="hand" onClick={sort('name')}>
-                  Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
-                </th>
-                <th className="hand" onClick={sort('file')}>
-                  File <FontAwesomeIcon icon={getSortIconByFieldName('file')} />
-                </th>
-                <th className="hand" onClick={sort('description')}>
-                  Description <FontAwesomeIcon icon={getSortIconByFieldName('description')} />
-                </th>
-                <th>
-                  Project <FontAwesomeIcon icon="sort" />
-                </th>
-                <th>
-                  Progress <FontAwesomeIcon icon="sort" />
-                </th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {fileList.map((file, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/file/${file.id}`} color="link" size="sm">
-                      {file.id}
-                    </Button>
-                  </td>
-                  <td>{file.name}</td>
-                  <td>
-                    {file.file ? (
-                      <div>
-                        {file.fileContentType ? (
-                          <a onClick={openFile(file.fileContentType, file.file)}>Translation missing for entity.action.open &nbsp;</a>
-                        ) : null}
-                        <span>
-                          {file.fileContentType}, {byteSize(file.file)}
-                        </span>
-                      </div>
-                    ) : null}
-                  </td>
-                  <td>{file.description}</td>
-                  <td>{file.project ? <Link to={`/project/${file.project.id}`}>{file.project.id}</Link> : ''}</td>
-                  <td>{file.progress ? <Link to={`/progress/${file.progress.id}`}>{file.progress.id}</Link> : ''}</td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/file/${file.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                        <FontAwesomeIcon icon="eye" />{' '}
-                        <span className="d-none d-md-inline">Translation missing for entity.action.view</span>
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/file/${file.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" />{' '}
-                        <span className="d-none d-md-inline">Translation missing for entity.action.edit</span>
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          (location.href = `/file/${file.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`)
-                        }
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" />{' '}
-                        <span className="d-none d-md-inline">Translation missing for entity.action.delete</span>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        ) : (
-          !loading && <div className="alert alert-warning">No Files found</div>
-        )}
-      </div>
-      {totalItems ? (
-        <div className={fileList && fileList.length > 0 ? '' : 'd-none'}>
-          <div className="justify-content-center d-flex">
-            <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} />
-          </div>
-          <div className="justify-content-center d-flex">
-            <JhiPagination
-              activePage={paginationState.activePage}
-              onSelect={handlePagination}
-              maxButtons={5}
-              itemsPerPage={paginationState.itemsPerPage}
-              totalItems={totalItems}
-            />
-          </div>
-        </div>
-      ) : (
-        ''
-      )}
+    <div className="padding">
+      <Row justify="space-between" align="middle">
+        <Title level={2} data-cy="FileHeading">
+          Files
+        </Title>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/file/new')} data-cy="entityCreateButton">
+          Upload a new File
+        </Button>
+      </Row>
+      <Row gutter={[20, 20]}>
+        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+          <Row justify="center" align="middle" style={{ width: '100%', height: '100%', backgroundColor: '#ffff' }}>
+            <span>Files Viewer is a work on progress</span>
+          </Row>
+        </Col>
+
+        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+          <Row justify="center" align="middle">
+            <Col span={24}>
+              <List
+                pagination={false}
+                bordered
+                style={{ backgroundColor: '#ffff' }}
+                dataSource={fileList}
+                loading={loading}
+                renderItem={(item: IFile, index) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`} />}
+                      title={item?.name}
+                      description={item?.description}
+                    />
+                    <Row justify="space-evenly" align="middle" style={{ maxWidth: '40%' }}>
+                      {/* <span>{item?.progress?.id}</span>
+                      <span>{item?.project?.id}</span>
+                      <span>{item?.fileContentType}</span> */}
+                      <Tooltip title="Open">
+                        <Button
+                          type="link"
+                          icon={<EyeOutlined />}
+                          onClick={() => navigate(`/file/${item?.id}`)}
+                          data-cy="entityDetailsButton"
+                        />
+                      </Tooltip>
+                      <Tooltip title="Download">
+                        <Button type="link" icon={<DownloadOutlined />} onClick={openFile(item?.fileContentType, item?.file)} />
+                      </Tooltip>
+                      <Tooltip title="Edit">
+                        <Button
+                          type="link"
+                          icon={<EditOutlined />}
+                          onClick={() => navigate(`/file/${item?.id}/edit`)}
+                          data-cy="entityEditButton"
+                        />
+                      </Tooltip>
+                      <Tooltip title="Delete">
+                        <Button
+                          type="link"
+                          icon={<DeleteOutlined />}
+                          onClick={() => navigate(`/file/${item?.id}/delete`)}
+                          data-cy="entityDeleteButton"
+                        />
+                      </Tooltip>
+                    </Row>
+                  </List.Item>
+                )}
+              />
+            </Col>
+          </Row>
+        </Col>
+      </Row>
     </div>
+    // {/* <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} /> */}
+    // {/* <JhiPagination
+    //   activePage={paginationState.activePage}
+    //   onSelect={handlePagination}
+    //   maxButtons={5}
+    //   itemsPerPage={paginationState.itemsPerPage}
+    //   totalItems={totalItems}
+    // /> */}
   );
 };
 

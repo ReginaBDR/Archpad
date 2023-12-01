@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Translate, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-
 import { getEntities } from './contact.reducer';
+import Title from 'antd/es/typography/Title';
+import { Avatar, Button, Col, Divider, List, Row, Space } from 'antd';
+import { IContact } from 'app/shared/model/contact.model';
+import { PlusOutlined, EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 export const Contact = () => {
   const dispatch = useAppDispatch();
@@ -90,126 +91,76 @@ export const Contact = () => {
   };
 
   return (
-    <div>
-      <h2 id="contact-heading" data-cy="ContactHeading">
-        Contacts
-        <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
-          </Button>
-          <Link to="/contact/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp; Create a new Contact
-          </Link>
-        </div>
-      </h2>
-      <div className="table-responsive">
-        {contactList && contactList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand" onClick={sort('id')}>
-                  ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
-                </th>
-                <th className="hand" onClick={sort('name')}>
-                  Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
-                </th>
-                <th className="hand" onClick={sort('lastName')}>
-                  Last Name <FontAwesomeIcon icon={getSortIconByFieldName('lastName')} />
-                </th>
-                <th className="hand" onClick={sort('company')}>
-                  Company <FontAwesomeIcon icon={getSortIconByFieldName('company')} />
-                </th>
-                <th className="hand" onClick={sort('address')}>
-                  Address <FontAwesomeIcon icon={getSortIconByFieldName('address')} />
-                </th>
-                <th className="hand" onClick={sort('phone')}>
-                  Phone <FontAwesomeIcon icon={getSortIconByFieldName('phone')} />
-                </th>
-                <th className="hand" onClick={sort('email')}>
-                  Email <FontAwesomeIcon icon={getSortIconByFieldName('email')} />
-                </th>
-                <th className="hand" onClick={sort('role')}>
-                  Role <FontAwesomeIcon icon={getSortIconByFieldName('role')} />
-                </th>
-                <th className="hand" onClick={sort('notes')}>
-                  Notes <FontAwesomeIcon icon={getSortIconByFieldName('notes')} />
-                </th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {contactList.map((contact, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/contact/${contact.id}`} color="link" size="sm">
-                      {contact.id}
-                    </Button>
-                  </td>
-                  <td>{contact.name}</td>
-                  <td>{contact.lastName}</td>
-                  <td>{contact.company}</td>
-                  <td>{contact.address}</td>
-                  <td>{contact.phone}</td>
-                  <td>{contact.email}</td>
-                  <td>{contact.role}</td>
-                  <td>{contact.notes}</td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/contact/${contact.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                        <FontAwesomeIcon icon="eye" />{' '}
-                        <span className="d-none d-md-inline">Translation missing for entity.action.view</span>
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/contact/${contact.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" />{' '}
-                        <span className="d-none d-md-inline">Translation missing for entity.action.edit</span>
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          (location.href = `/contact/${contact.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`)
-                        }
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" />{' '}
-                        <span className="d-none d-md-inline">Translation missing for entity.action.delete</span>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        ) : (
-          !loading && <div className="alert alert-warning">No Contacts found</div>
-        )}
-      </div>
-      {totalItems ? (
-        <div className={contactList && contactList.length > 0 ? '' : 'd-none'}>
-          <div className="justify-content-center d-flex">
-            <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} />
-          </div>
-          <div className="justify-content-center d-flex">
-            <JhiPagination
-              activePage={paginationState.activePage}
-              onSelect={handlePagination}
-              maxButtons={5}
-              itemsPerPage={paginationState.itemsPerPage}
-              totalItems={totalItems}
-            />
-          </div>
-        </div>
-      ) : (
-        ''
-      )}
+    <div className="padding">
+      <Row justify="space-between" align="middle" style={{ margin: '0 4rem 10px 4rem' }}>
+        <Title level={2} data-cy="ContactHeading">
+          Contacts
+        </Title>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/contact/new')} data-cy="entityCreateButton">
+          Create a Contact
+        </Button>
+      </Row>
+      <Row justify="center" align="middle">
+        <Col span={22}>
+          <List
+            pagination={false}
+            bordered
+            style={{ backgroundColor: '#ffff' }}
+            dataSource={contactList}
+            loading={loading}
+            renderItem={(item: IContact, index) => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`} />}
+                  title={`${item?.name} ${item?.lastName}`}
+                  description={item?.company}
+                />
+                <Space direction="horizontal" size="small" wrap style={{ maxWidth: '40%' }} split={<Divider type="vertical" />}>
+                  <Button type="link" icon={<EyeOutlined />} onClick={() => navigate(`/contact/${item?.id}`)} data-cy="entityDetailsButton">
+                    View
+                  </Button>
+                  <Button
+                    type="link"
+                    icon={<EditOutlined />}
+                    onClick={() => navigate(`/contact/${item?.id}/edit`)}
+                    data-cy="entityEditButton"
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    type="link"
+                    icon={<DeleteOutlined />}
+                    onClick={() => navigate(`/contact/${item?.id}/delete`)}
+                    data-cy="entityDeleteButton"
+                  >
+                    Delete
+                  </Button>
+                </Space>
+              </List.Item>
+            )}
+          />
+        </Col>
+      </Row>
     </div>
+
+    //     {totalItems ? (
+    //       <div className={contactList && contactList.length > 0 ? '' : 'd-none'}>
+    //         <div className="justify-content-center d-flex">
+    //           <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} />
+    //         </div>
+    //         <div className="justify-content-center d-flex">
+    //           <JhiPagination
+    //             activePage={paginationState.activePage}
+    //             onSelect={handlePagination}
+    //             maxButtons={5}
+    //             itemsPerPage={paginationState.itemsPerPage}
+    //             totalItems={totalItems}
+    //           />
+    //         </div>
+    //       </div>
+    //     ) : (
+    //       ''
+    //     )}
   );
 };
 

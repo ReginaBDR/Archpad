@@ -10,7 +10,7 @@ export const EntitiesMenu = () => {
       key: '1',
       label: (
         <Button type="link" onClick={() => navigate('/project')}>
-          Project
+          Projects
         </Button>
       ),
     },
@@ -18,7 +18,7 @@ export const EntitiesMenu = () => {
       key: '2',
       label: (
         <Button type="link" onClick={() => navigate('/contact')}>
-          Contact
+          Contacts
         </Button>
       ),
     },
@@ -26,15 +26,7 @@ export const EntitiesMenu = () => {
       key: '3',
       label: (
         <Button type="link" onClick={() => navigate('/file')}>
-          File
-        </Button>
-      ),
-    },
-    {
-      key: '4',
-      label: (
-        <Button type="link" onClick={() => navigate('/progress')}>
-          Progress
+          Files
         </Button>
       ),
     },
@@ -42,7 +34,7 @@ export const EntitiesMenu = () => {
 
   return (
     <Dropdown menu={{ items }} data-cy="entity">
-      <span>Entities</span>
+      <span>Menu</span>
     </Dropdown>
   );
 };

@@ -1,13 +1,13 @@
-import './home.scss';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import QueueAnim from 'rc-queue-anim';
 import { useAppSelector } from 'app/config/store';
-import { Button, Col, Row } from 'antd';
+import { Button, Col, Row, Space } from 'antd';
 import BannerImage from './banner-image';
 import HomeSectionOne from './home-section-1';
 import HomeSectionTwo from './home-section-2';
 import { bannerData } from './home-data';
+import './home.scss';
 
 export const Home = () => {
   const account = useAppSelector(state => state.authentication.account);
@@ -26,20 +26,43 @@ export const Home = () => {
                 <br />
                 {paragraphTwo}
               </p>
-              {!account?.login && (
-                <span key="button">
+              <span key="button">
+                {account?.login ? (
                   <Button
                     type="primary"
                     size="large"
                     className="home-banner-btn"
                     onClick={() => {
-                      navigate('/login');
+                      navigate('/project');
                     }}
                   >
-                    Login
+                    View your Projects
                   </Button>
-                </span>
-              )}
+                ) : (
+                  <Space wrap size="middle">
+                    <Button
+                      type="primary"
+                      size="large"
+                      className="home-banner-btn"
+                      onClick={() => {
+                        navigate('/login');
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                      type="primary"
+                      size="large"
+                      className="home-banner-btn"
+                      onClick={() => {
+                        navigate('/account/register');
+                      }}
+                    >
+                      Register
+                    </Button>
+                  </Space>
+                )}
+              </span>
             </QueueAnim>
           </Row>
         </Col>

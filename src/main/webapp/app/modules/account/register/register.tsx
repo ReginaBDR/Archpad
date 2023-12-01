@@ -40,16 +40,12 @@ export const RegisterPage = () => {
   }, [successMessage]);
 
   return (
-    <div className="padding-top">
+    <div className="padding">
       <Row justify="center">
         <Col xs={22} sm={22} md={18} lg={12} xl={12} xxl={12}>
-          <Title level={1} id="register-title" data-cy="registerTitle">
-            Registration
+          <Title level={2} id="register-title" data-cy="registerTitle">
+            Create your free account
           </Title>
-        </Col>
-      </Row>
-      <Row justify="center">
-        <Col xs={22} sm={22} md={18} lg={12} xl={10} xxl={10}>
           <Form
             name="register"
             form={form}
@@ -64,7 +60,7 @@ export const RegisterPage = () => {
             <Row gutter={[16, 16]}>
               <Col span="24">
                 <Form.Item name="username" rules={[{ required: true, message: 'Please input your Username!' }]}>
-                  <Input prefix={<UserOutlined />} placeholder="Username" data-cy="username" minLength={1} maxLength={50} />
+                  <Input prefix={<UserOutlined />} placeholder="Username or Company" data-cy="username" minLength={1} maxLength={50} />
                 </Form.Item>
                 <Form.Item
                   name="email"

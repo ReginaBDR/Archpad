@@ -1,72 +1,46 @@
 import React, { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { Button, Row, Col } from 'reactstrap';
-import {} from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-
 import { getEntity } from './contact.reducer';
+import { Card, Col, Descriptions, DescriptionsProps, Row } from 'antd';
 
-export const ContactDetail = () => {
+interface IContactDetailProps {
+  customerIdProp?: number;
+}
+
+export const ContactDetail = (props: IContactDetailProps) => {
+  const { customerIdProp } = props;
   const dispatch = useAppDispatch();
-
   const { id } = useParams<'id'>();
 
   useEffect(() => {
-    dispatch(getEntity(id));
+    dispatch(getEntity(customerIdProp || id));
   }, []);
 
   const contactEntity = useAppSelector(state => state.contact.entity);
+
+  const items: DescriptionsProps['items'] = [
+    { key: '1', label: 'Name', children: `${contactEntity.name} ${contactEntity.lastName}` },
+    { key: '2', label: 'Company', children: contactEntity.company },
+    { key: '3', label: 'Address', children: contactEntity.address },
+    { key: '4', label: 'Phone', children: contactEntity.phone },
+    { key: '5', label: 'Email', children: contactEntity.email },
+    { key: '6', label: 'Role', children: contactEntity.role },
+    { key: '7', label: 'Notes', children: contactEntity.notes, span: 1 },
+  ];
+
   return (
-    <Row>
-      <Col md="8">
-        <h2 data-cy="contactDetailsHeading">Contact</h2>
-        <dl className="jh-entity-details">
-          <dt>
-            <span id="id">Translation missing for global.field.id</span>
-          </dt>
-          <dd>{contactEntity.id}</dd>
-          <dt>
-            <span id="name">Name</span>
-          </dt>
-          <dd>{contactEntity.name}</dd>
-          <dt>
-            <span id="lastName">Last Name</span>
-          </dt>
-          <dd>{contactEntity.lastName}</dd>
-          <dt>
-            <span id="company">Company</span>
-          </dt>
-          <dd>{contactEntity.company}</dd>
-          <dt>
-            <span id="address">Address</span>
-          </dt>
-          <dd>{contactEntity.address}</dd>
-          <dt>
-            <span id="phone">Phone</span>
-          </dt>
-          <dd>{contactEntity.phone}</dd>
-          <dt>
-            <span id="email">Email</span>
-          </dt>
-          <dd>{contactEntity.email}</dd>
-          <dt>
-            <span id="role">Role</span>
-          </dt>
-          <dd>{contactEntity.role}</dd>
-          <dt>
-            <span id="notes">Notes</span>
-          </dt>
-          <dd>{contactEntity.notes}</dd>
-        </dl>
-        <Button tag={Link} to="/contact" replace color="info" data-cy="entityDetailsBackButton">
-          <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Translation missing for entity.action.back</span>
-        </Button>
-        &nbsp;
-        <Button tag={Link} to={`/contact/${contactEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Translation missing for entity.action.edit</span>
-        </Button>
+    <Row justify="center" style={{ marginTop: '2rem' }}>
+      <Col span={22}>
+        <Card>
+          <Descriptions
+            title={contactEntity.company || contactEntity.name}
+            layout="vertical"
+            column={{ xs: 1, sm: 1, md: 2, lg: 2, xl: 2, xxl: 2 }}
+            bordered
+            items={items}
+          />
+        </Card>
       </Col>
     </Row>
   );
