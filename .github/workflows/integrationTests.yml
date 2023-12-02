@@ -15,3 +15,9 @@ jobs:
         with:
           gradle-version: 7.6
           arguments: test integrationTest
+
+      - name: Install node.js packages
+        run: npm install
+
+      - name: Run frontend test
+        run: npm run ci:frontend:test
