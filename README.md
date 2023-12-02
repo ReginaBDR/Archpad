@@ -2,6 +2,13 @@
 
 This application was generated using JHipster 8.0.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.0.0](https://www.jhipster.tech/documentation-archive/v8.0.0).
 
+### Testing purpose sign in credentials
+
+```
+Username: user
+Password: user
+```
+
 ## Project Structure
 
 Node is required for generation and recommended for development. `package.json` is always generated for a better development experience with prettier, commit hooks, scripts and so on.
@@ -52,8 +59,7 @@ The `npm run` command will list all of the scripts available to run for this pro
 
 ## Data schema
 
-![Data squema](jhipster-jdl.png "Data squema")
-
+![Data squema](jhipster-jdl.png 'Data squema')
 
 ## Building for production
 
