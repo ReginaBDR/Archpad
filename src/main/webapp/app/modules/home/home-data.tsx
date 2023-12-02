@@ -2,7 +2,7 @@ import { IHomeBannerData, IHomeSectionOneData, IHomeSectionTwoData } from 'app/s
 import React from 'react';
 
 export const bannerData: IHomeBannerData = {
-  title: 'Welcome to Archipad',
+  title: 'Welcome to Archpad',
   paragraphOne: 'Your all-in-one solution for efficient and seamless architecture project management.',
   paragraphTwo:
     'Unleash the full potential of your projects with our intuitive and feature-rich platform designed specifically for architects and project teams.',
@@ -24,7 +24,7 @@ export const sectionOneData: IHomeSectionOneData[] = [
   {
     title: 'Scalability',
     content:
-      "Whether you're managing a small-scale project or a large architectural endeavor, Archipad scales with you. Grow your projects without limits.",
+      "Whether you're managing a small-scale project or a large architectural endeavor, Archpad scales with you. Grow your projects without limits.",
     src: '../../../content/images/scalability.png',
   },
 ];

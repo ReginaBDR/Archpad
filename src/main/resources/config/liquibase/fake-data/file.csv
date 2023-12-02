@@ -1,11 +1,41 @@
 id;name;file;file_content_type;description
-1;cradle priesthood easy-going;../fake-data/blob/hipster.png;image/png;whenever instead
-2;for dearly;../fake-data/blob/hipster.png;image/png;infinite monthly
-3;gleefully mmm outrageous;../fake-data/blob/hipster.png;image/png;circa
-4;hard-to-find;../fake-data/blob/hipster.png;image/png;sleepy
-5;gah fruitful basketball;../fake-data/blob/hipster.png;image/png;movie nifty
-6;guest;../fake-data/blob/hipster.png;image/png;yippee
-7;abaft;../fake-data/blob/hipster.png;image/png;respray
-8;meanwhile;../fake-data/blob/hipster.png;image/png;scarify powerfully redden
-9;gadzooks uselessly;../fake-data/blob/hipster.png;image/png;opposite
-10;before failing;../fake-data/blob/hipster.png;image/png;yummy
+1;Document 1;../fake-data/blob/buildingIfc.ifc;application/ifc;This is the first document with important information.
+2;Image 1;../fake-data/blob/metricFloorplan.jpg;image/jpg;A beautiful landscape image taken during a vacation.
+3;Spreadsheet 1;../fake-data/blob/spreadsheet.xlsx;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;Financial data for the quarter.
+4;Presentation 1;../fake-data/blob/imperialFloorplan.png;image/png;Slides for the upcoming meeting.
+5;Text File 1;../fake-data/blob/text.txt;text/plain;Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+6;Document 2;../fake-data/blob/buildingIfc.ifc;application/ifc;Another document containing detailed analysis.
+7;Image 2;../fake-data/blob/metricFloorplan.jpg;image/jpg;A family photo taken on a special occasion.
+8;Spreadsheet 2;../fake-data/blob/spreadsheet.xlsx;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;Inventory data for the month.
+9;Presentation 2;../fake-data/blob/imperialFloorplan.png;image/png;Training slides for the team.
+10;Text File 2;../fake-data/blob/text.txt;text/plain;Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+11;Document 3;../fake-data/blob/bootsAndBeans.pdf;application/pdf;Important legal document for review.
+12;Image 3;../fake-data/blob/metricFloorplan.jpg;image/jpg;Captivating sunset photo captured during a trip.
+13;Spreadsheet 3;../fake-data/blob/bootsAndBeans.pdf;application/pdf;Sales data for the year.
+14;Presentation 3;../fake-data/blob/imperialFloorplan.png;image/png;Proposal slides for the client.
+15;Text File 3;../fake-data/blob/text.txt;text/plain;Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+16;Document 4;../fake-data/blob/bootsAndBeans.pdf;application/pdf;Guidelines document for the project.
+17;Image 4;../fake-data/blob/metricFloorplan.jpg;image/jpg;A stunning nature photograph with vibrant colors.
+18;Spreadsheet 4;../fake-data/blob/bootsAndBeans.pdf;application/pdf;Budget details for the upcoming year.
+19;Presentation 4;../fake-data/blob/imperialFloorplan.png;image/png;Slides for the client pitch.
+20;Text File 4;../fake-data/blob/text.txt;text/plain;Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+21;Document 5;../fake-data/blob/bootsAndBeans.pdf;application/pdf;Policy document outlining company guidelines.
+22;Image 5;../fake-data/blob/metricFloorplan.jpg;image/jpg;Photograph capturing a memorable event.
+23;Spreadsheet 5;../fake-data/blob/bootsAndBeans.pdf;application/pdf;Project timeline and milestones.
+24;Presentation 5;../fake-data/blob/buildingIfc.ifc;application/ifc;Slides for the team training session.
+25;Text File 5;../fake-data/blob/text.txt;text/plain;Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+26;Document 6;../fake-data/blob/bootsAndBeans.pdf;application/pdf;Technical specifications document for a product.
+27;Image 6;../fake-data/blob/metricFloorplan.jpg;image/jpg;Portrait photograph of a team member.
+28;Spreadsheet 6;../fake-data/blob/spreadsheet.xlsx;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;Employee attendance records for the month.
+29;Presentation 6;../fake-data/blob/imperialFloorplan.png;image/png;Slides for the department meeting.
+30;Text File 6;../fake-data/blob/text.txt;text/plain;Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+31;Document 7;../fake-data/blob/bootsAndBeans.pdf;application/pdf;Terms and conditions document for a service.
+32;Image 7;../fake-data/blob/metricFloorplan.jpg;image/jpg;Scenic photograph of a famous landmark.
+33;Spreadsheet 7;../fake-data/blob/bootsAndBeans.pdf;application/pdf;Customer feedback and survey data.
+34;Presentation 7;../fake-data/blob/imperialFloorplan.png;image/png;Slides for the product launch event.
+35;Text File 7;../fake-data/blob/text.txt;text/plain;Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+36;Document 8;../fake-data/blob/bootsAndBeans.pdf;application/pdf;Project proposal document for a new initiative.
+37;Image 8;../fake-data/blob/metricFloorplan.jpg;image/jpg;Group photo of the team celebrating success.
+38;Spreadsheet 8;../fake-data/blob/bootsAndBeans.pdf;application/pdf;Financial projections for the next quarter.
+39;Presentation 8;../fake-data/blob/bootsAndBeans.pdf;application/pdf;Slides for the product demo to clients.
+40;Text File 8;../fake-data/blob/text.txt;text/plain;Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.

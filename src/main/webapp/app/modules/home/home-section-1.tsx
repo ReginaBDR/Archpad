@@ -19,7 +19,7 @@ export const HomeSectionOne = () => {
 
   return (
     <div className="home-func-wrapper" id="home-func">
-      <h2>Why Archipad?</h2>
+      <h2>Why Archpad?</h2>
       <i className="line" />
       <OverPack location="home-func" playScale={0.4}>
         <QueueAnim type="bottom" key="home-func" ease="easeOutQuart" leaveReverse>

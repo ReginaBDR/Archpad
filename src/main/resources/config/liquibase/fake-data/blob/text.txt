@@ -1,0 +1,10 @@
+sábado, 2 de diciembre de 2023
+
+Título
+Asunto
+Sólo debes tocar o hacer clic en este texto de marcador de posición y comenzar a escribir para reemplazar estas notas en viñetas con tu propio texto.
+Pages detecta que estás creando una lista cuando empiezas una oración con un guión o bien con un número o letra seguido de un punto.
+Usa la tecla Tabulador para aumentar la sangría.
+Usa la tecla Retorno para agregar una nueva viñeta.
+Presiona dos veces la tecla Retorno para finalizar la lista con viñetas.
+Puedes visualizar y editar tus notas en tu Mac, iPad o iPhone, o desde iCloud.com.
