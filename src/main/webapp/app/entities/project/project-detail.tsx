@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeftOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { getEntity } from './project.reducer';
-import { Button, Col, Descriptions, Row, Space, Tabs } from 'antd';
+import { getEntity, deleteEntity } from './project.reducer';
+import { Button, Col, Descriptions, Popconfirm, Row, Space, Tabs } from 'antd';
 import Title from 'antd/es/typography/Title';
 import { IProject } from 'app/shared/model/project.model';
 import { project, location } from './project-description-columns';
@@ -17,12 +17,18 @@ export const ProjectDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams<'id'>();
   const [activeTabKey, setActiveTabKey] = useState<string>('1');
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch(getEntity(id));
   }, []);
 
   const projectEntity: IProject = useAppSelector(state => state.project.entity);
+
+  const confirmDelete = () => {
+    dispatch(deleteEntity(id));
+    navigate('/project');
+  };
 
   const tabContent = [
     {
@@ -36,15 +42,23 @@ export const ProjectDetail = () => {
                 {`Project ${projectEntity.name}`}
               </Title>
               <Space size="small" wrap>
-                <Button type="primary" onClick={() => navigate('/project')} data-cy="entityDetailsBackButton" icon={<ArrowLeftOutlined />}>
+                <Button type="primary" onClick={() => navigate(-1)} data-cy="entityDetailsBackButton" icon={<ArrowLeftOutlined />}>
                   Go back
                 </Button>
                 <Button type="primary" onClick={() => navigate(`/project/${projectEntity.id}/edit`)} icon={<EditOutlined />}>
                   Edit
                 </Button>
-                <Button type="primary" onClick={() => navigate(`/project/${projectEntity.id}/delete`)} icon={<DeleteOutlined />}>
-                  Delete
-                </Button>
+                <Popconfirm
+                  title="Delete"
+                  description="Are you sure to delete this project?"
+                  open={isDeleteConfirmOpen}
+                  onConfirm={confirmDelete}
+                  onCancel={() => setIsDeleteConfirmOpen(false)}
+                >
+                  <Button type="primary" onClick={() => setIsDeleteConfirmOpen(true)} icon={<DeleteOutlined />}>
+                    Delete
+                  </Button>
+                </Popconfirm>
               </Space>
             </Row>
             <Row justify="center" style={{ marginTop: '2rem' }}>

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Translate, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
-import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
-import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
+import { getPaginationState } from 'react-jhipster';
+import { ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { getEntities } from './progress.reducer';
+import { getEntities, getEntity } from './progress.reducer';
 import { Button, Card, Col, Row, Timeline, TimelineItemProps } from 'antd';
 import Title from 'antd/es/typography/Title';
 import { PlusOutlined } from '@ant-design/icons';
@@ -21,13 +20,11 @@ export const Progress = (props: IProgressProps) => {
   const dispatch = useAppDispatch();
   const pageLocation = useLocation();
   const navigate = useNavigate();
-
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
   const [progressItems, setProgressItems] = useState<TimelineItemProps[]>([]);
-  const [selectedProgress, setSelectedProgress] = useState<number>(null);
-
+  const [selectedProgress, setSelectedProgress] = useState<number | null>(null);
   const progressList = useAppSelector(state => state.progress.entities);
   const loading = useAppSelector(state => state.progress.loading);
   const totalItems = useAppSelector(state => state.progress.totalItems);
@@ -68,7 +65,6 @@ export const Progress = (props: IProgressProps) => {
       });
     }
   }, [pageLocation.search]);
-  // moment(e.date).format("DD MMM YYYY")
 
   useEffect(() => {
     if (progressList.length > 0 && !loading) {
@@ -77,7 +73,7 @@ export const Progress = (props: IProgressProps) => {
           key: progress.id,
           label: (
             <Button type="text" onClick={() => setSelectedProgress(progress.id)}>
-              {progress?.link || 'Unknown user'}
+              {progress?.contact?.company || 'Unknown user'}
             </Button>
           ),
           children: (
@@ -103,33 +99,10 @@ export const Progress = (props: IProgressProps) => {
     };
   }, [progressList]);
 
-  const sort = p => () => {
-    setPaginationState({
-      ...paginationState,
-      order: paginationState.order === ASC ? DESC : ASC,
-      sort: p,
-    });
-  };
-
-  const handlePagination = currentPage =>
-    setPaginationState({
-      ...paginationState,
-      activePage: currentPage,
-    });
-
-  const handleSyncList = () => {
-    sortEntities();
-  };
-
-  const getSortIconByFieldName = (fieldName: string) => {
-    const sortFieldName = paginationState.sort;
-    const order = paginationState.order;
-    if (sortFieldName !== fieldName) {
-      return faSort;
-    } else {
-      return order === ASC ? faSortUp : faSortDown;
-    }
-  };
+  useEffect(() => {
+    if (!selectedProgress) return;
+    dispatch(getEntity(selectedProgress));
+  }, [selectedProgress]);
 
   return (
     <div className="padding" style={{ width: '100%' }}>
@@ -139,7 +112,12 @@ export const Progress = (props: IProgressProps) => {
       <Row gutter={[20, 20]}>
         <Col xs={24} sm={24} md={12} lg={12} xl={12}>
           <Row justify="end" align="middle">
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/progress/new')} data-cy="entityCreateButton">
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate('/progress/new', { state: { id: projectId } })}
+              data-cy="entityCreateButton"
+            >
               Add Progress
             </Button>
           </Row>
@@ -151,19 +129,11 @@ export const Progress = (props: IProgressProps) => {
         </Col>
         <Col xs={24} sm={24} md={12} lg={12} xl={12}>
           <Row justify="center">
-            <Card style={{ width: '100%' }}>{selectedProgress && <ProgressDetail progressId={selectedProgress} />}</Card>
+            <Card style={{ width: '100%' }}>{selectedProgress && <ProgressDetail projectId={projectId} />}</Card>
           </Row>
         </Col>
       </Row>
     </div>
-    // {/* <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} /> */}
-    // {/* <JhiPagination
-    //   activePage={paginationState.activePage}
-    //   onSelect={handlePagination}
-    //   maxButtons={5}
-    //   itemsPerPage={paginationState.itemsPerPage}
-    //   totalItems={totalItems}
-    // /> */}
   );
 };
 

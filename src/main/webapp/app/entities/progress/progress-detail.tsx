@@ -1,36 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { getEntity } from './progress.reducer';
-import { Button, Descriptions, DescriptionsProps, Row } from 'antd';
+import { deleteEntity, getEntities } from './progress.reducer';
+import { Button, Descriptions, DescriptionsProps, Popconfirm, Row } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router';
 import { IProgress } from 'app/shared/model/progress.model';
+import { useNavigate } from 'react-router-dom';
 
-interface IProgressDetailProps {
-  progressId?: number;
-}
-
-export const ProgressDetail = (props: IProgressDetailProps) => {
-  const { progressId } = props;
+export const ProgressDetail = (props: { projectId?: string }) => {
+  const { projectId } = props;
   const dispatch = useAppDispatch();
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState<boolean>(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (progressId !== undefined) {
-      dispatch(getEntity(progressId));
-    }
-  }, [dispatch, progressId]);
-
   const progressEntity: IProgress = useAppSelector(state => state.progress.entity);
 
+  const confirmDelete = () => {
+    dispatch(deleteEntity(progressEntity.id)).then(() => {
+      setIsDeleteConfirmOpen(false);
+      getEntities({});
+    });
+  };
+
   const items: DescriptionsProps['items'] = [
-    { key: '1', label: 'Link reference', children: progressEntity.link },
+    { key: '1', label: 'Link Reference', children: progressEntity.link },
     {
       key: '2',
-      label: 'Contact attached',
-      children: progressEntity.contact ? `${progressEntity?.contact?.name || ''} ${progressEntity?.contact?.lastName || ''}` : 'None',
+      label: 'Contact Attached',
+      children: progressEntity?.contact ? `${progressEntity?.contact?.name || ''} ${progressEntity?.contact?.lastName || ''}` : 'None',
     },
-    { key: '3', label: 'Changelog notes', children: progressEntity.notes },
+    { key: '3', label: 'Changelog Notes', children: progressEntity.notes },
   ];
 
   return (
@@ -46,20 +43,28 @@ export const ProgressDetail = (props: IProgressDetailProps) => {
             type="text"
             size="middle"
             icon={<EditOutlined />}
-            onClick={() => navigate(`/progress/${progressEntity.id}/edit`)}
+            onClick={() => navigate(`/progress/${progressEntity.id}/edit`, { state: { id: projectId } })}
             data-cy="entityEditButton"
           >
             Edit
           </Button>
-          <Button
-            type="text"
-            size="middle"
-            icon={<DeleteOutlined />}
-            onClick={() => navigate(`/progress/${progressEntity.id}/delete`)}
-            data-cy="entityDeleteButton"
+          <Popconfirm
+            title="Delete"
+            description="Are you sure to delete this progress?"
+            open={isDeleteConfirmOpen}
+            onConfirm={confirmDelete}
+            onCancel={() => setIsDeleteConfirmOpen(false)}
           >
-            Delete
-          </Button>
+            <Button
+              type="text"
+              size="middle"
+              icon={<DeleteOutlined />}
+              onClick={() => setIsDeleteConfirmOpen(true)}
+              data-cy="entityDeleteButton"
+            >
+              Delete
+            </Button>
+          </Popconfirm>
         </Row>
       }
     />

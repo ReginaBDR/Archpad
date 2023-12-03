@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { openFile, byteSize, Translate, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
-import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { openFile, getPaginationState } from 'react-jhipster';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { getEntities } from './file.reducer';
-import { Avatar, Button, Col, List, Row, Tooltip } from 'antd';
+import { getEntities, deleteEntity } from './file.reducer';
+import { Button, Col, List, Popconfirm, Row, Tooltip } from 'antd';
 import Title from 'antd/es/typography/Title';
 import { IFile } from 'app/shared/model/file.model';
 import { PlusOutlined, EyeOutlined, DownloadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -18,9 +17,9 @@ interface IFileProps {
 export const File = (props: IFileProps) => {
   const { projectId } = props;
   const dispatch = useAppDispatch();
-
   const pageLocation = useLocation();
   const navigate = useNavigate();
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState<number | null>(null);
 
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
@@ -34,7 +33,7 @@ export const File = (props: IFileProps) => {
     dispatch(
       getEntities({
         page: paginationState.activePage - 1,
-        size: paginationState.itemsPerPage,
+        size: 10,
         sort: `${paginationState.sort},${paginationState.order}`,
       }),
     );
@@ -67,32 +66,14 @@ export const File = (props: IFileProps) => {
     }
   }, [pageLocation.search]);
 
-  const sort = p => () => {
-    setPaginationState({
-      ...paginationState,
-      order: paginationState.order === ASC ? DESC : ASC,
-      sort: p,
-    });
-  };
-
   const handlePagination = currentPage =>
     setPaginationState({
       ...paginationState,
       activePage: currentPage,
     });
 
-  const handleSyncList = () => {
-    sortEntities();
-  };
-
-  const getSortIconByFieldName = (fieldName: string) => {
-    const sortFieldName = paginationState.sort;
-    const order = paginationState.order;
-    if (sortFieldName !== fieldName) {
-      return faSort;
-    } else {
-      return order === ASC ? faSortUp : faSortDown;
-    }
+  const confirmDelete = (id: number) => {
+    dispatch(deleteEntity(id));
   };
 
   return (
@@ -116,22 +97,20 @@ export const File = (props: IFileProps) => {
           <Row justify="center" align="middle">
             <Col span={24}>
               <List
-                pagination={false}
+                pagination={{
+                  total: totalItems,
+                  pageSize: paginationState.itemsPerPage,
+                  current: paginationState.activePage,
+                  onChange: handlePagination,
+                }}
                 bordered
                 style={{ backgroundColor: '#ffff' }}
                 dataSource={fileList}
                 loading={loading}
                 renderItem={(item: IFile, index) => (
                   <List.Item>
-                    <List.Item.Meta
-                      avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`} />}
-                      title={item?.name}
-                      description={item?.description}
-                    />
+                    <List.Item.Meta title={item?.name} description={item?.description} />
                     <Row justify="space-evenly" align="middle" style={{ maxWidth: '40%' }}>
-                      {/* <span>{item?.progress?.id}</span>
-                      <span>{item?.project?.id}</span>
-                      <span>{item?.fileContentType}</span> */}
                       <Tooltip title="Open">
                         <Button
                           type="link"
@@ -152,12 +131,20 @@ export const File = (props: IFileProps) => {
                         />
                       </Tooltip>
                       <Tooltip title="Delete">
-                        <Button
-                          type="link"
-                          icon={<DeleteOutlined />}
-                          onClick={() => navigate(`/file/${item?.id}/delete`)}
-                          data-cy="entityDeleteButton"
-                        />
+                        <Popconfirm
+                          title="Delete"
+                          description="Are you sure to delete this file?"
+                          open={isDeleteConfirmOpen === item?.id}
+                          onConfirm={() => confirmDelete(item?.id)}
+                          onCancel={() => setIsDeleteConfirmOpen(null)}
+                        >
+                          <Button
+                            type="link"
+                            icon={<DeleteOutlined />}
+                            onClick={() => setIsDeleteConfirmOpen(item?.id)}
+                            data-cy="entityDeleteButton"
+                          />
+                        </Popconfirm>
                       </Tooltip>
                     </Row>
                   </List.Item>
@@ -168,14 +155,6 @@ export const File = (props: IFileProps) => {
         </Col>
       </Row>
     </div>
-    // {/* <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} /> */}
-    // {/* <JhiPagination
-    //   activePage={paginationState.activePage}
-    //   onSelect={handlePagination}
-    //   maxButtons={5}
-    //   itemsPerPage={paginationState.itemsPerPage}
-    //   totalItems={totalItems}
-    // /> */}
   );
 };
 

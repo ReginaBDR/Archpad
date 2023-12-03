@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Translate, getPaginationState, JhiPagination, JhiItemCount } from 'react-jhipster';
-import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { getPaginationState } from 'react-jhipster';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { getEntities } from './contact.reducer';
+import { getEntities, deleteEntity } from './contact.reducer';
 import Title from 'antd/es/typography/Title';
-import { Avatar, Button, Col, Divider, List, Row, Space } from 'antd';
+import { Avatar, Button, Col, Divider, List, Popconfirm, Row, Space } from 'antd';
 import { IContact } from 'app/shared/model/contact.model';
 import { PlusOutlined, EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 export const Contact = () => {
   const dispatch = useAppDispatch();
-
   const pageLocation = useLocation();
   const navigate = useNavigate();
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState<number | null>(null);
 
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
@@ -76,18 +75,10 @@ export const Contact = () => {
       activePage: currentPage,
     });
 
-  const handleSyncList = () => {
-    sortEntities();
-  };
-
-  const getSortIconByFieldName = (fieldName: string) => {
-    const sortFieldName = paginationState.sort;
-    const order = paginationState.order;
-    if (sortFieldName !== fieldName) {
-      return faSort;
-    } else {
-      return order === ASC ? faSortUp : faSortDown;
-    }
+  const confirmDelete = (contactId: number) => {
+    dispatch(deleteEntity(contactId)).then(() => {
+      getAllEntities();
+    });
   };
 
   return (
@@ -103,7 +94,12 @@ export const Contact = () => {
       <Row justify="center" align="middle">
         <Col span={22}>
           <List
-            pagination={false}
+            pagination={{
+              total: totalItems,
+              pageSize: paginationState.itemsPerPage,
+              current: paginationState.activePage,
+              onChange: handlePagination,
+            }}
             bordered
             style={{ backgroundColor: '#ffff' }}
             dataSource={contactList}
@@ -127,14 +123,22 @@ export const Contact = () => {
                   >
                     Edit
                   </Button>
-                  <Button
-                    type="link"
-                    icon={<DeleteOutlined />}
-                    onClick={() => navigate(`/contact/${item?.id}/delete`)}
-                    data-cy="entityDeleteButton"
+                  <Popconfirm
+                    title="Delete"
+                    description="Are you sure to delete this contact?"
+                    open={isDeleteConfirmOpen === item?.id}
+                    onConfirm={() => confirmDelete(item?.id)}
+                    onCancel={() => setIsDeleteConfirmOpen(null)}
                   >
-                    Delete
-                  </Button>
+                    <Button
+                      type="link"
+                      icon={<DeleteOutlined />}
+                      onClick={() => setIsDeleteConfirmOpen(item?.id)}
+                      data-cy="entityDeleteButton"
+                    >
+                      Delete
+                    </Button>
+                  </Popconfirm>
                 </Space>
               </List.Item>
             )}
@@ -142,25 +146,6 @@ export const Contact = () => {
         </Col>
       </Row>
     </div>
-
-    //     {totalItems ? (
-    //       <div className={contactList && contactList.length > 0 ? '' : 'd-none'}>
-    //         <div className="justify-content-center d-flex">
-    //           <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} />
-    //         </div>
-    //         <div className="justify-content-center d-flex">
-    //           <JhiPagination
-    //             activePage={paginationState.activePage}
-    //             onSelect={handlePagination}
-    //             maxButtons={5}
-    //             itemsPerPage={paginationState.itemsPerPage}
-    //             totalItems={totalItems}
-    //           />
-    //         </div>
-    //       </div>
-    //     ) : (
-    //       ''
-    //     )}
   );
 };
 

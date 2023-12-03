@@ -11,10 +11,11 @@ import { FolderOpenTwoTone } from '@ant-design/icons';
 
 export const columns: ColumnsType<IProject> = [
   {
-    title: 'ID',
+    title: 'Id',
     dataIndex: 'id',
     key: 'id',
     sorter: (a, b) => a.id - b.id,
+    defaultSortOrder: 'ascend',
     render: value => {
       return <Link to={`/project/${value}`}>{value}</Link>;
     },
@@ -45,8 +46,8 @@ export const columns: ColumnsType<IProject> = [
     dataIndex: 'customer',
     key: 'customer',
     width: '10%',
-    render: (record, value) => {
-      return record && <Link to={`/customer/${record.id}`}>{record.company}</Link>;
+    render: (text, record, index) => {
+      return record?.customer?.company || record?.customer?.id;
     },
   },
   {
@@ -68,14 +69,15 @@ export const columns: ColumnsType<IProject> = [
     key: 'city',
   },
   {
-    title: 'State Province',
+    title: 'State',
     dataIndex: 'stateProvince',
     key: 'stateProvince',
+    width: '7%',
   },
   {
     title: 'Country',
-    dataIndex: 'Country',
-    key: 'Country',
+    dataIndex: 'country',
+    key: 'country',
     width: '10%',
   },
   {

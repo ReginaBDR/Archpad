@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Dropdown, MenuProps } from 'antd';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 export const EntitiesMenu = () => {
   const navigate = useNavigate();
