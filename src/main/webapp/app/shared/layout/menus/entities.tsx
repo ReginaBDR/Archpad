@@ -22,14 +22,6 @@ export const EntitiesMenu = () => {
         </Button>
       ),
     },
-    {
-      key: '3',
-      label: (
-        <Button type="link" onClick={() => navigate('/file')}>
-          Files
-        </Button>
-      ),
-    },
   ];
 
   return (

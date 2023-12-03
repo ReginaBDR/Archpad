@@ -1,49 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Row, Col, FormText } from 'reactstrap';
-import { isNumber, ValidatedField, ValidatedForm, ValidatedBlobField } from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
-import { mapIdList } from 'app/shared/util/entity-utils';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-
 import { IProject } from 'app/shared/model/project.model';
 import { getEntities as getProjects } from 'app/entities/project/project.reducer';
 import { IProgress } from 'app/shared/model/progress.model';
 import { getEntities as getProgresses } from 'app/entities/progress/progress.reducer';
 import { IFile } from 'app/shared/model/file.model';
 import { getEntity, updateEntity, createEntity, reset } from './file.reducer';
+import { Button, Col, Form, Input, Row } from 'antd';
+import Title from 'antd/es/typography/Title';
+import { InboxOutlined } from '@ant-design/icons';
+import Dragger from 'antd/es/upload/Dragger';
 
 export const FileUpdate = () => {
   const dispatch = useAppDispatch();
-
   const navigate = useNavigate();
-
-  const { id } = useParams<'id'>();
-  const isNew = id === undefined;
-
-  const projects = useAppSelector(state => state.project.entities);
-  const progresses = useAppSelector(state => state.progress.entities);
-  const fileEntity = useAppSelector(state => state.file.entity);
-  const loading = useAppSelector(state => state.file.loading);
+  const location = useLocation();
+  const isNew = location?.state?.id === null;
+  const [form] = Form.useForm();
+  const projects: IProject[] = useAppSelector(state => state.project.entities);
+  const progresses: IProgress[] = useAppSelector(state => state.progress.entities);
   const updating = useAppSelector(state => state.file.updating);
   const updateSuccess = useAppSelector(state => state.file.updateSuccess);
+  const [uploadedFile, setUploadedFile] = useState<File | Blob | null>(null);
 
   const handleClose = () => {
-    navigate('/file' + location.search);
+    setUploadedFile(null);
+    form.resetFields();
+    navigate(-1);
   };
 
   useEffect(() => {
     if (isNew) {
       dispatch(reset());
     } else {
-      dispatch(getEntity(id));
+      dispatch(getEntity(location?.state?.id));
     }
-
     dispatch(getProjects({}));
     dispatch(getProgresses({}));
   }, []);
+
+  const fileEntity: IFile = useAppSelector(state => state.file.entity);
 
   useEffect(() => {
     if (updateSuccess) {
@@ -53,99 +50,118 @@ export const FileUpdate = () => {
 
   // eslint-disable-next-line complexity
   const saveEntity = values => {
-    if (values.id !== undefined && typeof values.id !== 'number') {
-      values.id = Number(values.id);
-    }
+    form
+      .validateFields()
+      .then(() => {
+        if (values.id !== undefined && typeof values.id !== 'number') {
+          values.id = Number(values.id);
+        }
 
-    const entity = {
-      ...fileEntity,
-      ...values,
-      project: projects.find(it => it.id.toString() === values.project.toString()),
-      progress: progresses.find(it => it.id.toString() === values.progress.toString()),
-    };
-
-    if (isNew) {
-      dispatch(createEntity(entity));
-    } else {
-      dispatch(updateEntity(entity));
-    }
-  };
-
-  const defaultValues = () =>
-    isNew
-      ? {}
-      : {
+        const entity = {
           ...fileEntity,
-          project: fileEntity?.project?.id,
-          progress: fileEntity?.progress?.id,
+          ...values,
+          project: projects.find(it => it.id.toString() === location?.state?.projectId.toString()),
+          progress: null, // progresses.find(it => it.id.toString() === values.progress.toString()),
         };
 
+        if (isNew) {
+          dispatch(createEntity(entity));
+        } else {
+          dispatch(updateEntity(entity));
+        }
+      })
+      .catch(e => {
+        console.error('There was an error uploading the file', e);
+      });
+  };
+
+  const defaultValues = () => (isNew ? {} : { ...fileEntity });
+
+  const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
+  };
+
   return (
-    <div>
-      <Row className="justify-content-center">
-        <Col md="8">
-          <h2 id="archpadApp.file.home.createOrEditLabel" data-cy="FileCreateUpdateHeading">
-            Create or edit a File
-          </h2>
-        </Col>
-      </Row>
-      <Row className="justify-content-center">
-        <Col md="8">
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
-              {!isNew ? (
-                <ValidatedField
-                  name="id"
-                  required
-                  readOnly
-                  id="file-id"
-                  label="Translation missing for global.field.id"
-                  validate={{ required: true }}
-                />
-              ) : null}
-              <ValidatedField label="Name" id="file-name" name="name" data-cy="name" type="text" />
-              <ValidatedBlobField
-                label="File"
-                id="file-file"
-                name="file"
-                data-cy="file"
-                openActionLabel="Translation missing for entity.action.open"
-              />
-              <ValidatedField label="Description" id="file-description" name="description" data-cy="description" type="text" />
-              <ValidatedField id="file-project" name="project" data-cy="project" label="Project" type="select">
-                <option value="" key="0" />
-                {projects
-                  ? projects.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
-              <ValidatedField id="file-progress" name="progress" data-cy="progress" label="Progress" type="select">
-                <option value="" key="0" />
-                {progresses
-                  ? progresses.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
-              <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/file" replace color="info">
-                <FontAwesomeIcon icon="arrow-left" />
-                &nbsp;
-                <span className="d-none d-md-inline">Translation missing for entity.action.back</span>
-              </Button>
-              &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
-                <FontAwesomeIcon icon="save" />
-                &nbsp; Translation missing for entity.action.save
-              </Button>
-            </ValidatedForm>
-          )}
+    <div className="padding">
+      <Row justify="center">
+        <Col xs={22} sm={22} md={18} lg={18} xl={18} xxl={18}>
+          <Title level={2} id="createOrEditLabel" data-cy="FileCreateUpdateHeading">
+            {isNew ? 'Upload a File' : 'Edit a File'}
+          </Title>
+          <Form name="file" form={form} initialValues={defaultValues()} onFinish={saveEntity} size="large" id="file-id" layout="vertical">
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <Form.Item
+                  label="Name"
+                  name="name"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input a name',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Name" data-cy="name" />
+                </Form.Item>
+                <Form.Item label="Description" name="description">
+                  <Input placeholder="Description" data-cy="description" />
+                </Form.Item>
+                <Form.Item
+                  name="file"
+                  // valuePropName="fileList"
+                  data-cy="file"
+                  getValueFromEvent={normFile}
+                  style={{ width: '100%' }}
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please upload a file',
+                    },
+                  ]}
+                >
+                  <Dragger
+                    accept="image/*,.pdf,.xlsx"
+                    disabled={uploadedFile !== null}
+                    listType="picture"
+                    multiple={false}
+                    maxCount={1}
+                    showUploadList={{ showRemoveIcon: false }}
+                    beforeUpload={(file: File) => setUploadedFile(file)}
+                    customRequest={({ onSuccess, onError }) => {
+                      onSuccess(uploadedFile);
+                    }}
+                  >
+                    <p className="ant-upload-drag-icon">
+                      <InboxOutlined rev={undefined} />
+                    </p>
+                    <p className="ant-upload-text">Click or drag a file to this area to upload</p>
+                    <p className="ant-upload-hint">Support for a single upload in .xlsx, .pdf, .txt .ifc and image formats</p>
+                  </Dragger>
+                </Form.Item>
+
+                <Form.Item>
+                  <Row justify="end">
+                    <Button
+                      type="primary"
+                      data-cy="entityCreateCancelButton"
+                      style={{ marginRight: '10px' }}
+                      onClick={() => {
+                        navigate(-1);
+                      }}
+                    >
+                      Go Back
+                    </Button>
+                    <Button type="primary" htmlType="submit" data-cy="submit" disabled={updating}>
+                      Save
+                    </Button>
+                  </Row>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
         </Col>
       </Row>
     </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { openFile, getPaginationState } from 'react-jhipster';
-import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
+import { ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities, deleteEntity } from './file.reducer';
@@ -82,7 +82,12 @@ export const File = (props: IFileProps) => {
         <Title level={2} data-cy="FileHeading">
           Files
         </Title>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/file/new')} data-cy="entityCreateButton">
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => navigate('/file/new', { state: { id: null, projectId } })}
+          data-cy="entityCreateButton"
+        >
           Upload a new File
         </Button>
       </Row>
@@ -107,7 +112,7 @@ export const File = (props: IFileProps) => {
                 style={{ backgroundColor: '#ffff' }}
                 dataSource={fileList}
                 loading={loading}
-                renderItem={(item: IFile, index) => (
+                renderItem={(item: IFile) => (
                   <List.Item>
                     <List.Item.Meta title={item?.name} description={item?.description} />
                     <Row justify="space-evenly" align="middle" style={{ maxWidth: '40%' }}>
@@ -126,7 +131,7 @@ export const File = (props: IFileProps) => {
                         <Button
                           type="link"
                           icon={<EditOutlined />}
-                          onClick={() => navigate(`/file/${item?.id}/edit`)}
+                          onClick={() => navigate(`/file/${item?.id}/edit`, { state: { id: item?.id, projectId } })}
                           data-cy="entityEditButton"
                         />
                       </Tooltip>

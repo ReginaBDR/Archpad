@@ -17,14 +17,13 @@ const HeaderComponent = (props: IHeaderProps) => {
   const [selectedMenuItem, setSelectedMenuItem] = useState<string>('1');
 
   const menuItems: ItemType[] = [
-    { key: '1', title: 'Home', label: props.isAuthenticated && <Home /> },
-    { key: '2', title: 'Entities', label: props.isAuthenticated && <EntitiesMenu /> },
+    { key: '1', title: 'Entities', label: props.isAuthenticated && <EntitiesMenu /> },
     {
-      key: '3',
+      key: '2',
       title: 'Administration',
       label: props.isAuthenticated && props.isAdmin && <AdminMenu showOpenAPI={props.isOpenAPIEnabled} />,
     },
-    { key: '4', title: 'Account', label: <AccountMenu isAuthenticated={props.isAuthenticated} /> },
+    { key: '3', title: 'Account', label: <AccountMenu isAuthenticated={props.isAuthenticated} /> },
   ];
 
   return (
