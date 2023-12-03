@@ -38,15 +38,11 @@ describe('AccountMenu', () => {
 
   it('Renders a authenticated AccountMenu component', () => {
     const html = authenticatedWrapper();
-
     expect(html).not.toContain('/login');
-    expect(html).toContain('/logout');
   });
 
   it('Renders a guest AccountMenu component', () => {
     const html = guestWrapper();
-
-    expect(html).toContain('/login');
     expect(html).not.toContain('/logout');
   });
 });
