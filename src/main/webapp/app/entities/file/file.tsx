@@ -74,7 +74,7 @@ export const File = (props: IFileProps) => {
     });
 
   const confirmDelete = (id: number) => {
-    dispatch(deleteEntity(id));
+    dispatch(deleteEntity({ id, projectId }));
   };
 
   return (

@@ -66,10 +66,11 @@ export const partialUpdateEntity = createAsyncThunk(
 
 export const deleteEntity = createAsyncThunk(
   'file/delete_entity',
-  async (id: string | number, thunkAPI) => {
+  async (payload: { id: string | number; projectId: string }, thunkAPI) => {
+    const { id, projectId } = payload;
     const requestUrl = `${apiUrl}/${id}`;
     const result = await axios.delete<IFile>(requestUrl);
-    thunkAPI.dispatch(getEntities({}));
+    thunkAPI.dispatch(getEntities({ projectId }));
     return result;
   },
   { serializeError: serializeAxiosError },

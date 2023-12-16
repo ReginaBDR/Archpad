@@ -89,13 +89,8 @@ export const ProjectDetail = () => {
       children: <ContactDetail customerIdProp={projectEntity?.customer?.id} />,
     },
     {
-      label: 'Project Contacts',
-      key: '3',
-      children: <Contact />,
-    },
-    {
       label: 'Project Files',
-      key: '4',
+      key: '3',
       children: <File projectId={id} />,
     },
   ];
