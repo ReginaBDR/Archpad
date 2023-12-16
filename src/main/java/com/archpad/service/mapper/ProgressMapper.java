@@ -13,7 +13,7 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface ProgressMapper extends EntityMapper<ProgressDTO, Progress> {
-    @Mapping(target = "contact", source = "contact", qualifiedByName = "contactId")
+    @Mapping(target = "contact", source = "contact")
     @Mapping(target = "project", source = "project", qualifiedByName = "projectId")
     ProgressDTO toDto(Progress s);
 
