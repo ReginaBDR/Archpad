@@ -7,7 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.archpad.IntegrationTest;
 import com.archpad.domain.File;
+import com.archpad.domain.Project;
 import com.archpad.repository.FileRepository;
+import com.archpad.repository.ProjectRepository;
 import com.archpad.service.dto.FileDTO;
 import com.archpad.service.mapper.FileMapper;
 import jakarta.persistence.EntityManager;
@@ -46,6 +48,8 @@ class FileResourceIT {
     private static final String ENTITY_API_URL = "/api/files";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
+    private static final Long DEFAULT_PROJECT_ID = 1L;
+
     private static Random random = new Random();
     private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
@@ -62,6 +66,11 @@ class FileResourceIT {
     private MockMvc restFileMockMvc;
 
     private File file;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    private Project project;
 
     /**
      * Create an entity for this test.
@@ -140,12 +149,17 @@ class FileResourceIT {
     @Test
     @Transactional
     void getAllFiles() throws Exception {
+        Project project = new Project();
+        project.setId(DEFAULT_PROJECT_ID);
+        projectRepository.saveAndFlush(project);
+
+        file.setProject(project);
         // Initialize the database
         fileRepository.saveAndFlush(file);
 
         // Get all the fileList
         restFileMockMvc
-            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
+            .perform(get(ENTITY_API_URL + "?projectId=" + DEFAULT_PROJECT_ID + "&sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(file.getId().intValue())))

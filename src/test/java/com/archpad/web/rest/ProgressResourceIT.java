@@ -7,7 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.archpad.IntegrationTest;
 import com.archpad.domain.Progress;
+import com.archpad.domain.Project;
 import com.archpad.repository.ProgressRepository;
+import com.archpad.repository.ProjectRepository;
 import com.archpad.service.dto.ProgressDTO;
 import com.archpad.service.mapper.ProgressMapper;
 import jakarta.persistence.EntityManager;
@@ -40,6 +42,8 @@ class ProgressResourceIT {
     private static final String ENTITY_API_URL = "/api/progresses";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
+    private static final Long DEFAULT_PROJECT_ID = 1L;
+
     private static Random random = new Random();
     private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
@@ -56,6 +60,11 @@ class ProgressResourceIT {
     private MockMvc restProgressMockMvc;
 
     private Progress progress;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    private Project project;
 
     /**
      * Create an entity for this test.
@@ -124,12 +133,17 @@ class ProgressResourceIT {
     @Test
     @Transactional
     void getAllProgresses() throws Exception {
+        Project project = new Project();
+        project.setId(DEFAULT_PROJECT_ID);
+        projectRepository.saveAndFlush(project);
+
+        progress.setProject(project);
         // Initialize the database
         progressRepository.saveAndFlush(progress);
 
         // Get all the progressList
         restProgressMockMvc
-            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
+            .perform(get(ENTITY_API_URL + "?projectId=" + DEFAULT_PROJECT_ID + "&sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(progress.getId().intValue())))
