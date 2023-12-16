@@ -18,8 +18,10 @@ const apiUrl = 'api/progresses';
 
 // Actions
 
-export const getEntities = createAsyncThunk('progress/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
-  const requestUrl = `${apiUrl}?${sort ? `page=${page}&size=${size}&sort=${sort}&` : ''}cacheBuster=${new Date().getTime()}`;
+export const getEntities = createAsyncThunk('progress/fetch_entity_list', async ({ page, size, sort, projectId }: IQueryParams) => {
+  const requestUrl = `${apiUrl}?projectId=${projectId}&${
+    sort ? `page=${page}&size=${size}&sort=${sort}&` : ''
+  }cacheBuster=${new Date().getTime()}`;
   return axios.get<IProgress[]>(requestUrl);
 });
 
@@ -36,7 +38,6 @@ export const createEntity = createAsyncThunk(
   'progress/create_entity',
   async (entity: IProgress, thunkAPI) => {
     const result = await axios.post<IProgress>(apiUrl, cleanEntity(entity));
-    thunkAPI.dispatch(getEntities({}));
     return result;
   },
   { serializeError: serializeAxiosError },
@@ -46,7 +47,6 @@ export const updateEntity = createAsyncThunk(
   'progress/update_entity',
   async (entity: IProgress, thunkAPI) => {
     const result = await axios.put<IProgress>(`${apiUrl}/${entity.id}`, cleanEntity(entity));
-    thunkAPI.dispatch(getEntities({}));
     return result;
   },
   { serializeError: serializeAxiosError },
@@ -56,7 +56,6 @@ export const partialUpdateEntity = createAsyncThunk(
   'progress/partial_update_entity',
   async (entity: IProgress, thunkAPI) => {
     const result = await axios.patch<IProgress>(`${apiUrl}/${entity.id}`, cleanEntity(entity));
-    thunkAPI.dispatch(getEntities({}));
     return result;
   },
   { serializeError: serializeAxiosError },
@@ -64,10 +63,11 @@ export const partialUpdateEntity = createAsyncThunk(
 
 export const deleteEntity = createAsyncThunk(
   'progress/delete_entity',
-  async (id: string | number, thunkAPI) => {
+  async (payload: { id: string | number; projectId: string }, thunkAPI) => {
+    const { id, projectId } = payload;
     const requestUrl = `${apiUrl}/${id}`;
     const result = await axios.delete<IProgress>(requestUrl);
-    thunkAPI.dispatch(getEntities({}));
+    thunkAPI.dispatch(getEntities({ projectId }));
     return result;
   },
   { serializeError: serializeAxiosError },

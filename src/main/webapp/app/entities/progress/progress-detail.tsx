@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { deleteEntity, getEntities } from './progress.reducer';
+import { deleteEntity } from './progress.reducer';
 import { Button, Descriptions, DescriptionsProps, Popconfirm, Row } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { IProgress } from 'app/shared/model/progress.model';
@@ -14,14 +14,13 @@ export const ProgressDetail = (props: { projectId?: string }) => {
   const progressEntity: IProgress = useAppSelector(state => state.progress.entity);
 
   const confirmDelete = () => {
-    dispatch(deleteEntity(progressEntity.id)).then(() => {
+    dispatch(deleteEntity({ id: progressEntity.id, projectId })).then(() => {
       setIsDeleteConfirmOpen(false);
-      getEntities({});
     });
   };
 
   const items: DescriptionsProps['items'] = [
-    { key: '1', label: 'Link Reference', children: progressEntity.link },
+    { key: '1', label: 'Link Reference', children: progressEntity.link || 'None' },
     {
       key: '2',
       label: 'Contact Attached',

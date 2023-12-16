@@ -1,13 +1,16 @@
 package com.archpad.service.dto;
 
+import com.archpad.domain.Contact;
+import com.archpad.domain.Project;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Objects;
 
 /**
  * A DTO for the {@link com.archpad.domain.Progress} entity.
  */
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class ProgressDTO implements Serializable {
+public class ProgressAuditedDTO implements Serializable {
 
     private Long id;
 
@@ -18,6 +21,14 @@ public class ProgressDTO implements Serializable {
     private ContactDTO contact;
 
     private ProjectDTO project;
+
+    private String createdBy;
+
+    private Instant createdDate;
+
+    private String lastModifiedBy;
+
+    private Instant lastModifiedDate;
 
     public Long getId() {
         return id;
@@ -59,16 +70,70 @@ public class ProgressDTO implements Serializable {
         this.project = project;
     }
 
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
+    }
+
+    public Instant getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(Instant lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public ProgressAuditedDTO(
+        Long id,
+        String notes,
+        String link,
+        ContactDTO contact,
+        ProjectDTO project,
+        String createdBy,
+        Instant createdDate,
+        String lastModifiedBy,
+        Instant lastModifiedDate
+    ) {
+        this.id = id;
+        this.notes = notes;
+        this.link = link;
+        this.contact = contact;
+        this.project = project;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.lastModifiedBy = lastModifiedBy;
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ProgressDTO)) {
+        if (!(o instanceof ProgressAuditedDTO)) {
             return false;
         }
 
-        ProgressDTO progressDTO = (ProgressDTO) o;
+        ProgressAuditedDTO progressDTO = (ProgressAuditedDTO) o;
         if (this.id == null) {
             return false;
         }
@@ -89,6 +154,10 @@ public class ProgressDTO implements Serializable {
             ", link='" + getLink() + "'" +
             ", contact=" + getContact() +
             ", project=" + getProject() +
+            ", createdBy=" + getCreatedBy() +
+            ", createdDate=" + getCreatedDate() +
+            ", lastModifiedBy=" + getLastModifiedBy() +
+            ", lastModifiedDate=" + getLastModifiedDate() +
             "}";
     }
 }

@@ -52,7 +52,7 @@ export const ProgressUpdate = () => {
         const entity = {
           ...progressEntity,
           ...values,
-          contact: contacts.find(it => it.id.toString() === values?.contact.toString()),
+          contact: values?.contact !== undefined ? contacts?.find(it => it.id.toString() === values?.contact.toString()) : null,
           project: projects.find(it => it.id.toString() === location?.state?.id.toString()),
         };
         if (isNew) {
@@ -62,7 +62,7 @@ export const ProgressUpdate = () => {
         }
       })
       .catch(e => {
-        console.error('There was an saving the contact', e);
+        console.error('There was an error saving the contact', e);
       })
       .finally(() => {
         form.resetFields();

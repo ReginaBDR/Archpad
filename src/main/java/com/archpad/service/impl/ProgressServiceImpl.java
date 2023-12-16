@@ -3,12 +3,18 @@ package com.archpad.service.impl;
 import com.archpad.domain.Progress;
 import com.archpad.repository.ProgressRepository;
 import com.archpad.service.ProgressService;
+import com.archpad.service.dto.ProgressAuditedDTO;
 import com.archpad.service.dto.ProgressDTO;
+import com.archpad.service.mapper.ContactMapper;
 import com.archpad.service.mapper.ProgressMapper;
+import com.archpad.service.mapper.ProjectMapper;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +31,20 @@ public class ProgressServiceImpl implements ProgressService {
     private final ProgressRepository progressRepository;
 
     private final ProgressMapper progressMapper;
+    private final ContactMapper contactMapper;
 
-    public ProgressServiceImpl(ProgressRepository progressRepository, ProgressMapper progressMapper) {
+    private final ProjectMapper projectMapper;
+
+    public ProgressServiceImpl(
+        ProgressRepository progressRepository,
+        ProgressMapper progressMapper,
+        ContactMapper contactMapper,
+        ProjectMapper projectMapper
+    ) {
         this.progressRepository = progressRepository;
         this.progressMapper = progressMapper;
+        this.contactMapper = contactMapper;
+        this.projectMapper = projectMapper;
     }
 
     @Override
@@ -64,9 +80,29 @@ public class ProgressServiceImpl implements ProgressService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ProgressDTO> findAll(Pageable pageable) {
-        log.debug("Request to get all Progresses");
-        return progressRepository.findAll(pageable).map(progressMapper::toDto);
+    public Page<ProgressAuditedDTO> findAll(Pageable pageable, Long projectId) {
+        log.debug("Request to get all Progresses by project:", projectId);
+        Page<Progress> resultPage = progressRepository.findAllProgressesByProjectIdWithAudit(pageable, projectId);
+
+        List<ProgressAuditedDTO> progressAuditedDTOList = resultPage
+            .getContent()
+            .stream()
+            .map(row ->
+                new ProgressAuditedDTO(
+                    row.getId(),
+                    row.getNotes(),
+                    row.getLink(),
+                    contactMapper.toDto(row.getContact()),
+                    projectMapper.toDto(row.getProject()),
+                    row.getCreatedBy(),
+                    row.getCreatedDate(),
+                    row.getLastModifiedBy(),
+                    row.getLastModifiedDate()
+                )
+            )
+            .collect(Collectors.toList());
+
+        return new PageImpl<>(progressAuditedDTOList, pageable, resultPage.getTotalElements());
     }
 
     @Override
@@ -74,6 +110,30 @@ public class ProgressServiceImpl implements ProgressService {
     public Optional<ProgressDTO> findOne(Long id) {
         log.debug("Request to get Progress : {}", id);
         return progressRepository.findById(id).map(progressMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<ProgressAuditedDTO> findOneWithAudit(Long id) {
+        log.debug("Request to get Progress : {}", id);
+        Optional<Progress> progressOptional = progressRepository.findProgressByIdWithAudit(id);
+        if (progressOptional.isPresent()) {
+            return progressOptional.map(row ->
+                new ProgressAuditedDTO(
+                    row.getId(),
+                    row.getNotes(),
+                    row.getLink(),
+                    contactMapper.toDto(row.getContact()),
+                    projectMapper.toDto(row.getProject()),
+                    row.getCreatedBy(),
+                    row.getCreatedDate(),
+                    row.getLastModifiedBy(),
+                    row.getLastModifiedDate()
+                )
+            );
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override

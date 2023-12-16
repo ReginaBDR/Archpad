@@ -2,6 +2,7 @@ package com.archpad.web.rest;
 
 import com.archpad.repository.ProgressRepository;
 import com.archpad.service.ProgressService;
+import com.archpad.service.dto.ProgressAuditedDTO;
 import com.archpad.service.dto.ProgressDTO;
 import com.archpad.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -142,9 +143,12 @@ public class ProgressResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of progresses in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<ProgressDTO>> getAllProgresses(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<ProgressAuditedDTO>> getAllProgresses(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam Long projectId
+    ) {
         log.debug("REST request to get a page of Progresses");
-        Page<ProgressDTO> page = progressService.findAll(pageable);
+        Page<ProgressAuditedDTO> page = progressService.findAll(pageable, projectId);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -156,9 +160,9 @@ public class ProgressResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the progressDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ProgressDTO> getProgress(@PathVariable Long id) {
+    public ResponseEntity<ProgressAuditedDTO> getProgress(@PathVariable Long id) {
         log.debug("REST request to get Progress : {}", id);
-        Optional<ProgressDTO> progressDTO = progressService.findOne(id);
+        Optional<ProgressAuditedDTO> progressDTO = progressService.findOneWithAudit(id);
         return ResponseUtil.wrapOrNotFound(progressDTO);
     }
 

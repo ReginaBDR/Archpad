@@ -1,6 +1,8 @@
 package com.archpad.service;
 
+import com.archpad.service.dto.ProgressAuditedDTO;
 import com.archpad.service.dto.ProgressDTO;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,12 +36,13 @@ public interface ProgressService {
     Optional<ProgressDTO> partialUpdate(ProgressDTO progressDTO);
 
     /**
-     * Get all the progresses.
+     * Get all the progresses by project.
      *
-     * @param pageable the pagination information.
+     * @param pageable  the pagination information.
+     * @param projectId the project of the entity.
      * @return the list of entities.
      */
-    Page<ProgressDTO> findAll(Pageable pageable);
+    Page<ProgressAuditedDTO> findAll(Pageable pageable, Long projectId);
 
     /**
      * Get the "id" progress.
@@ -48,6 +51,14 @@ public interface ProgressService {
      * @return the entity.
      */
     Optional<ProgressDTO> findOne(Long id);
+
+    /**
+     * Get the "id" progress.
+     *
+     * @param id the id of the entity.
+     * @return the entity with Audited fields.
+     */
+    Optional<ProgressAuditedDTO> findOneWithAudit(Long id);
 
     /**
      * Delete the "id" progress.

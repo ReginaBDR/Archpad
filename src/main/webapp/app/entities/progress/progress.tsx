@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getPaginationState } from 'react-jhipster';
+import { TextFormat, getPaginationState } from 'react-jhipster';
 import { ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities, getEntity } from './progress.reducer';
-import { Button, Card, Col, Row, Timeline, TimelineItemProps } from 'antd';
+import { Button, Card, Col, Row, Timeline, TimelineItemProps, Typography } from 'antd';
 import Title from 'antd/es/typography/Title';
 import { PlusOutlined } from '@ant-design/icons';
 import { IProgress } from 'app/shared/model/progress.model';
 import ProgressDetail from './progress-detail';
+import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 interface IProgressProps {
   projectId?: string;
@@ -35,6 +36,7 @@ export const Progress = (props: IProgressProps) => {
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
+        projectId,
       }),
     );
   };
@@ -72,15 +74,11 @@ export const Progress = (props: IProgressProps) => {
         return {
           key: progress.id,
           label: (
-            <Button type="text" onClick={() => setSelectedProgress(progress.id)}>
-              {progress?.contact?.company || 'Unknown user'}
-            </Button>
+            <Typography.Link onClick={() => setSelectedProgress(progress.id)}>
+              <TextFormat type="date" value={progress?.createdDate} format={APP_LOCAL_DATE_FORMAT} />
+            </Typography.Link>
           ),
-          children: (
-            <Button type="link" onClick={() => setSelectedProgress(progress.id)}>
-              {progress?.notes}
-            </Button>
-          ),
+          children: `Created by: ${progress?.createdBy || 'Unknown user'}`,
         };
       });
       setProgressItems(data);
@@ -105,7 +103,7 @@ export const Progress = (props: IProgressProps) => {
   }, [selectedProgress]);
 
   return (
-    <div className="padding" style={{ width: '100%' }}>
+    <div style={{ width: '100%', paddingTop: '2rem' }}>
       <Title level={2} data-cy="ProgressHeading">
         Progress Tracking
       </Title>
@@ -121,7 +119,7 @@ export const Progress = (props: IProgressProps) => {
               Add Progress
             </Button>
           </Row>
-          <Row justify="center" align="middle" style={{ marginTop: '2rem' }}>
+          <Row justify="center" align="middle" style={{ paddingTop: '3rem' }}>
             <Col span={24} style={{ overflowY: 'auto', overflowX: 'hidden' }}>
               <Timeline mode="left" items={progressItems} />
             </Col>
@@ -129,7 +127,7 @@ export const Progress = (props: IProgressProps) => {
         </Col>
         <Col xs={24} sm={24} md={12} lg={12} xl={12}>
           <Row justify="center">
-            <Card style={{ width: '100%' }}>{selectedProgress && <ProgressDetail projectId={projectId} />}</Card>
+            <Card className="card-full-width">{selectedProgress && <ProgressDetail projectId={projectId} />}</Card>
           </Row>
         </Col>
       </Row>
