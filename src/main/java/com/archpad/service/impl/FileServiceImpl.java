@@ -64,9 +64,9 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<FileDTO> findAll(Pageable pageable) {
+    public Page<FileDTO> findAll(Pageable pageable, Long projectId) {
         log.debug("Request to get all Files");
-        return fileRepository.findAll(pageable).map(fileMapper::toDto);
+        return fileRepository.findAllFilesByProjectId(pageable, projectId).map(fileMapper::toDto);
     }
 
     @Override

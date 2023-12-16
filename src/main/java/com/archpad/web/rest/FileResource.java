@@ -140,9 +140,12 @@ public class FileResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of files in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<FileDTO>> getAllFiles(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<FileDTO>> getAllFiles(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam Long projectId
+    ) {
         log.debug("REST request to get a page of Files");
-        Page<FileDTO> page = fileService.findAll(pageable);
+        Page<FileDTO> page = fileService.findAll(pageable, projectId);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

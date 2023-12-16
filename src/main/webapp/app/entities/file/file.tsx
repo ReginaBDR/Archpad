@@ -35,6 +35,7 @@ export const File = (props: IFileProps) => {
         page: paginationState.activePage - 1,
         size: 10,
         sort: `${paginationState.sort},${paginationState.order}`,
+        projectId,
       }),
     );
   };

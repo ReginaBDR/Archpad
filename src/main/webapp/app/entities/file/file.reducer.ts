@@ -18,8 +18,10 @@ const apiUrl = 'api/files';
 
 // Actions
 
-export const getEntities = createAsyncThunk('file/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
-  const requestUrl = `${apiUrl}?${sort ? `page=${page}&size=${size}&sort=${sort}&` : ''}cacheBuster=${new Date().getTime()}`;
+export const getEntities = createAsyncThunk('file/fetch_entity_list', async ({ page, size, sort, projectId }: IQueryParams) => {
+  const requestUrl = `${apiUrl}?projectId=${projectId}&${
+    sort ? `page=${page}&size=${size}&sort=${sort}&` : ''
+  }cacheBuster=${new Date().getTime()}`;
   return axios.get<IFile[]>(requestUrl);
 });
 

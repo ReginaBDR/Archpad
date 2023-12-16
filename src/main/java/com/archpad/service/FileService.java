@@ -37,9 +37,10 @@ public interface FileService {
      * Get all the files.
      *
      * @param pageable the pagination information.
+     * @param projectId the project of the entity.
      * @return the list of entities.
      */
-    Page<FileDTO> findAll(Pageable pageable);
+    Page<FileDTO> findAll(Pageable pageable, Long projectId);
 
     /**
      * Get the "id" file.
