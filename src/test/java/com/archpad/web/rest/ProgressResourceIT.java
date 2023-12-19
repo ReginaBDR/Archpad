@@ -44,8 +44,6 @@ class ProgressResourceIT {
     private static final String ENTITY_API_URL = "/api/progresses";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
-    private static final Long DEFAULT_PROJECT_ID = 1L;
-
     private static Random random = new Random();
     private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
@@ -63,11 +61,6 @@ class ProgressResourceIT {
 
     private Progress progress;
 
-    @MockBean
-    private ProjectService projectService;
-
-    private Project project;
-
     /**
      * Create an entity for this test.
      *
@@ -75,12 +68,18 @@ class ProgressResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Progress createEntity(EntityManager em) {
-        Project project = new Project();
-        project.setId(DEFAULT_PROJECT_ID);
-        em.persist(project);
-        em.flush();
+        Progress progress = new Progress().notes(DEFAULT_NOTES).link(DEFAULT_LINK);
 
-        Progress progress = new Progress().notes(DEFAULT_NOTES).link(DEFAULT_LINK).project(project);
+        Project project;
+        if (TestUtil.findAll(em, Project.class).isEmpty()) {
+            project = ProjectResourceIT.createEntity(em);
+            em.persist(project);
+            em.flush();
+        } else {
+            project = TestUtil.findAll(em, Project.class).get(0);
+        }
+
+        progress.setProject(project);
         return progress;
     }
 
@@ -92,6 +91,18 @@ class ProgressResourceIT {
      */
     public static Progress createUpdatedEntity(EntityManager em) {
         Progress progress = new Progress().notes(UPDATED_NOTES).link(UPDATED_LINK);
+
+        Project project;
+        if (TestUtil.findAll(em, Project.class).isEmpty()) {
+            project = ProjectResourceIT.createEntity(em);
+            em.persist(project);
+            em.flush();
+        } else {
+            project = TestUtil.findAll(em, Project.class).get(0);
+        }
+
+        progress.setProject(project);
+
         return progress;
     }
 
@@ -145,7 +156,7 @@ class ProgressResourceIT {
 
         // Get all the progressList
         restProgressMockMvc
-            .perform(get(ENTITY_API_URL + "?projectId=1&sort=id,desc"))
+            .perform(get(ENTITY_API_URL + "?projectId=" + progress.getProject().getId() + "&sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(progress.getId().intValue())))

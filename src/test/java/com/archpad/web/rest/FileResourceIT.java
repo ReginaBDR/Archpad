@@ -50,8 +50,6 @@ class FileResourceIT {
     private static final String ENTITY_API_URL = "/api/files";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
-    private static final Long DEFAULT_PROJECT_ID = 1L;
-
     private static Random random = new Random();
     private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
@@ -69,11 +67,6 @@ class FileResourceIT {
 
     private File file;
 
-    @MockBean
-    private ProjectService projectService;
-
-    private Project project;
-
     /**
      * Create an entity for this test.
      *
@@ -81,17 +74,22 @@ class FileResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static File createEntity(EntityManager em) {
-        Project project = new Project();
-        project.setId(DEFAULT_PROJECT_ID);
-        em.persist(project);
-        em.flush();
-
         File file = new File()
             .name(DEFAULT_NAME)
             .file(DEFAULT_FILE)
             .fileContentType(DEFAULT_FILE_CONTENT_TYPE)
-            .description(DEFAULT_DESCRIPTION)
-            .project(project);
+            .description(DEFAULT_DESCRIPTION);
+
+        Project project;
+        if (TestUtil.findAll(em, Project.class).isEmpty()) {
+            project = ProjectResourceIT.createEntity(em);
+            em.persist(project);
+            em.flush();
+        } else {
+            project = TestUtil.findAll(em, Project.class).get(0);
+        }
+
+        file.setProject(project);
         return file;
     }
 
@@ -107,6 +105,18 @@ class FileResourceIT {
             .file(UPDATED_FILE)
             .fileContentType(UPDATED_FILE_CONTENT_TYPE)
             .description(UPDATED_DESCRIPTION);
+
+        Project project;
+        if (TestUtil.findAll(em, Project.class).isEmpty()) {
+            project = ProjectResourceIT.createEntity(em);
+            em.persist(project);
+            em.flush();
+        } else {
+            project = TestUtil.findAll(em, Project.class).get(0);
+        }
+
+        file.setProject(project);
+
         return file;
     }
 
@@ -162,7 +172,7 @@ class FileResourceIT {
 
         // Get all the fileList
         restFileMockMvc
-            .perform(get(ENTITY_API_URL + "?projectId=1&sort=id,desc"))
+            .perform(get(ENTITY_API_URL + "?projectId=" + file.getProject().getId() + "&sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(file.getId().intValue())))
