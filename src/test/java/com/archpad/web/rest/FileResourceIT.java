@@ -10,6 +10,7 @@ import com.archpad.domain.File;
 import com.archpad.domain.Project;
 import com.archpad.repository.FileRepository;
 import com.archpad.repository.ProjectRepository;
+import com.archpad.service.ProjectService;
 import com.archpad.service.dto.FileDTO;
 import com.archpad.service.mapper.FileMapper;
 import jakarta.persistence.EntityManager;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -67,8 +69,8 @@ class FileResourceIT {
 
     private File file;
 
-    @Autowired
-    private ProjectRepository projectRepository;
+    @MockBean
+    private ProjectService projectService;
 
     private Project project;
 
@@ -151,7 +153,8 @@ class FileResourceIT {
     void getAllFiles() throws Exception {
         Project project = new Project();
         project.setId(DEFAULT_PROJECT_ID);
-        projectRepository.saveAndFlush(project);
+        em.persist(project);
+        em.flush();
 
         file.setProject(project);
         // Initialize the database

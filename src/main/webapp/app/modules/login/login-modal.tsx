@@ -59,7 +59,7 @@ const LoginModal = (props: ILoginModalProps) => {
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit" style={{ marginBottom: '10px' }} block>
-                Log in
+                Sign in
               </Button>
               Or <Link to="/account/register">Create a free account!</Link>
             </Form.Item>

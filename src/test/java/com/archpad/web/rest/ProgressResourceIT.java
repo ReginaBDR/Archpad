@@ -10,6 +10,7 @@ import com.archpad.domain.Progress;
 import com.archpad.domain.Project;
 import com.archpad.repository.ProgressRepository;
 import com.archpad.repository.ProjectRepository;
+import com.archpad.service.ProjectService;
 import com.archpad.service.dto.ProgressDTO;
 import com.archpad.service.mapper.ProgressMapper;
 import jakarta.persistence.EntityManager;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -61,8 +63,8 @@ class ProgressResourceIT {
 
     private Progress progress;
 
-    @Autowired
-    private ProjectRepository projectRepository;
+    @MockBean
+    private ProjectService projectService;
 
     private Project project;
 
@@ -135,7 +137,8 @@ class ProgressResourceIT {
     void getAllProgresses() throws Exception {
         Project project = new Project();
         project.setId(DEFAULT_PROJECT_ID);
-        projectRepository.saveAndFlush(project);
+        em.persist(project);
+        em.flush();
 
         progress.setProject(project);
         // Initialize the database
