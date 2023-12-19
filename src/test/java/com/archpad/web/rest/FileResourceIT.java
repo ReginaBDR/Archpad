@@ -81,11 +81,17 @@ class FileResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static File createEntity(EntityManager em) {
+        Project project = new Project();
+        project.setId(DEFAULT_PROJECT_ID);
+        em.persist(project);
+        em.flush();
+
         File file = new File()
             .name(DEFAULT_NAME)
             .file(DEFAULT_FILE)
             .fileContentType(DEFAULT_FILE_CONTENT_TYPE)
-            .description(DEFAULT_DESCRIPTION);
+            .description(DEFAULT_DESCRIPTION)
+            .project(project);
         return file;
     }
 
@@ -151,18 +157,12 @@ class FileResourceIT {
     @Test
     @Transactional
     void getAllFiles() throws Exception {
-        Project project = new Project();
-        project.setId(DEFAULT_PROJECT_ID);
-        em.persist(project);
-        em.flush();
-
-        file.setProject(project);
         // Initialize the database
         fileRepository.saveAndFlush(file);
 
         // Get all the fileList
         restFileMockMvc
-            .perform(get(ENTITY_API_URL + "?projectId=" + DEFAULT_PROJECT_ID + "&sort=id,desc"))
+            .perform(get(ENTITY_API_URL + "?projectId=1&sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(file.getId().intValue())))

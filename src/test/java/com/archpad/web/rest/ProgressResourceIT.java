@@ -75,7 +75,12 @@ class ProgressResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Progress createEntity(EntityManager em) {
-        Progress progress = new Progress().notes(DEFAULT_NOTES).link(DEFAULT_LINK);
+        Project project = new Project();
+        project.setId(DEFAULT_PROJECT_ID);
+        em.persist(project);
+        em.flush();
+
+        Progress progress = new Progress().notes(DEFAULT_NOTES).link(DEFAULT_LINK).project(project);
         return progress;
     }
 
@@ -135,18 +140,12 @@ class ProgressResourceIT {
     @Test
     @Transactional
     void getAllProgresses() throws Exception {
-        Project project = new Project();
-        project.setId(DEFAULT_PROJECT_ID);
-        em.persist(project);
-        em.flush();
-
-        progress.setProject(project);
         // Initialize the database
         progressRepository.saveAndFlush(progress);
 
         // Get all the progressList
         restProgressMockMvc
-            .perform(get(ENTITY_API_URL + "?projectId=" + DEFAULT_PROJECT_ID + "&sort=id,desc"))
+            .perform(get(ENTITY_API_URL + "?projectId=1&sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(progress.getId().intValue())))
